@@ -11,7 +11,7 @@ public class LoginController implements Controller{
    LoginService loginService = new LoginService();
 
     private Handler loginAttempt = (ctx) -> {
-        UserDTO user = ctx.bodyAsClass(UserDTO.class); //A DTO (Data transfer object) is a tempory object used just to communicate information.
+        UserDTO user = ctx.bodyAsClass(UserDTO.class); //A DTO (Data transfer object) is a temporary object used just to communicate information.
 
         if(loginService.login(user.username, user.password)){
             ctx.req.getSession(); //This will return an HttpSession object. If none exists then a new one will be created
@@ -23,11 +23,9 @@ public class LoginController implements Controller{
         }
     };
 
-
     @Override
     public void addRoutes(Javalin app) {
         app.post("/login", this.loginAttempt);
     }
 
-    //this is a test comment
 }

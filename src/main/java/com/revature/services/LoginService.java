@@ -8,11 +8,10 @@ import org.slf4j.LoggerFactory;
 
 public class LoginService {
 
-    private UserDAO userDAO = new UserDAOImpl();
+    private UserDAO userDAO;
     private Logger logger = LoggerFactory.getLogger("Login Service Logger");
 
     public LoginService() {}
-
     public LoginService(UserDAO userDAO) {
         this.userDAO = userDAO;
     }

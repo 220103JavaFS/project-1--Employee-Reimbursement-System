@@ -6,7 +6,6 @@ import java.util.List;
 
 public class RequestDAOImpl implements RequestDAO {
 
-
     @Override
     public List<Request> showAllRequests() {
         return null;

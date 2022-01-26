@@ -1,4 +1,3 @@
 package com.revature.ServiceTest;
 
-public class RequestServiceTest {
-}
+public class RequestServiceTest { }

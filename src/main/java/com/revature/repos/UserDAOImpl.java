@@ -25,9 +25,9 @@ public class UserDAOImpl implements UserDAO {
             UserDTO user = new UserDTO();
 
             while (rs.next()){
-                user.username = rs.getString("ERS_USERNAME");
-                user.password = rs.getString("ERS_PASSWORD");
-                user.userRole = rs.getString("ERS_USER_ROLE");
+                user.username = rs.getString("ers_username");
+                user.password = rs.getString("ers_password");
+                user.userRole = rs.getString("ers_user_role");
             }
 
             return user;

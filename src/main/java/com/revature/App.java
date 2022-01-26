@@ -11,7 +11,7 @@ public class App {
 
     public static void main(String[] args) {
         app = Javalin.create((config)->{
-            config.addStaticFiles("C:\\Users\\zbyrs\\Desktop\\Project1\\HelloProject1",
+            config.addStaticFiles("C:\\Users\\zbyrs\\Desktop\\Project1\\HelloProject1.js",
                     Location.EXTERNAL);
         });
         configure(new LoginController());

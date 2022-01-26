@@ -13,9 +13,9 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public UserDTO login(String username) {
         try(Connection conn = ConnectionUtil.getConnection()){
-            String sql = "SELECT ERS_USERNAME, ERS_PASSWORD, ERS_USER_ROLE FROM ERS_USERS AS users JOIN ERS_USER_ROLES AS roles " +
-                    "ON users.USER_ROLE_ID = roles.ERS_USER_ROLE_ID" +
-                    " WHERE users.ERS_USERNAME = ?;";
+            String sql = "SELECT ers_username, ers_password, ers_user_role FROM ers_users AS users JOIN ers_user_roles AS roles " +
+                    "ON users.user_role_id = roles.ers_user_role_id " +
+                    "WHERE users.ers_username = ?;";
 
             PreparedStatement statement = conn.prepareStatement(sql);
 

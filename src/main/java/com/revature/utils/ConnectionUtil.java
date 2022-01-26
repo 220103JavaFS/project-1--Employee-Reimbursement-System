@@ -15,10 +15,10 @@ public class ConnectionUtil {
             e.printStackTrace();
         }
 
-        String url = "jdbc:postgresql://javafs220103.cvqp92fi7v6o.us-east-1.rds.amazonaws.com:5432/project1";
-        String username = "postgres"; //It is possible and preferable to hide this information in environment variables
+        String url = "jdbc:postgresql://project1.cmhpfqeepenq.us-east-1.rds.amazonaws.com:5432/project1";
+        String username = "project1"; //It is possible and preferable to hide this information in environment variables
         //System.out.println(System.getenv("SQLPassword"));
-        String password = "BSpassword#01"; //Those are accessed by System.getenv("var-name");
+        String password = "Aa111111"; //Those are accessed by System.getenv("var-name");
 
         return DriverManager.getConnection(url, username, password);
     }

@@ -1,10 +1,10 @@
 package com.revature.controllers;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.revature.models.UserDTO;
 import com.revature.services.LoginService;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
-
 
 public class LoginController implements Controller{
 

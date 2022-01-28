@@ -6,6 +6,8 @@ import com.revature.repos.RequestDAOImpl;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestDAOImplTest {
@@ -31,8 +33,12 @@ public class RequestDAOImplTest {
     @Test
     @Order(2)
     void testGetAllRequests(){
-        assertEquals(null, requestDAO.showAllRequests());
-        //assertEquals(testRequest, requestDAO.showAllRequests());
+        //assertEquals(null, requestDAO.showAllRequests());
+
+        //List<Request> requestList = requestDAO.showAllRequests();
+        //assertEquals(5, requestList.size());
+
+        assertNull(requestDAO.showAllRequests());
     }
 
     @Test

@@ -57,8 +57,98 @@ public class RequestDAOImpl implements RequestDAO {
     }
 
     @Override
-    public boolean addRequest(Request request) {
+    public int addReimbStatus() {
+        try (Connection conn = ConnectionUtil.getConnection()){
+            String insertQuery = "INSERT INTO ers_reimbursement_status (reimb_status)\n" +
+                    "VALUES ('pending');";
+            String returnStatusID = "SELECT reimb_status_id FROM ers_reimbursement_status;";
 
+            Statement statement = conn.createStatement();
+            statement.execute(insertQuery);
+            ResultSet rs = statement.executeQuery(returnStatusID);
+            int requestStatusID = rs.getInt("reimb_status_id");
+            logger.info("The connection was established and the query was run against the database");
+
+            return requestStatusID;
+
+
+
+        }catch (SQLException e){
+            e.printStackTrace();
+            logger.error("The connection to the database failed.");
+        }
+
+        logger.info("Something went wrong and the query didn't run correctly.");
+        return 0;
+
+    }
+
+    @Override
+    public int addReimbType(String type) {
+        try (Connection conn = ConnectionUtil.getConnection()){
+            String insertQuery = "INSERT INTO ers_reimbursement_type (reimb_type)\n" +
+                    "VALUES (?);";
+
+
+            String returnStatusID = "SELECT reimb_type_id FROM ers_reimbursement_type;";
+
+            PreparedStatement statement = conn.prepareStatement(insertQuery);
+            statement.setString(1, type);
+            statement.execute(insertQuery);
+
+            ResultSet rs = statement.executeQuery(returnStatusID);
+            int requestStatusID = rs.getInt("reimb_type_id");
+            logger.info("The connection was established and the query was run against the database");
+
+            return requestStatusID;
+
+
+
+        }catch (SQLException e){
+            e.printStackTrace();
+            logger.error("The connection to the database failed.");
+        }
+
+        logger.info("Something went wrong and the query didn't run correctly.");
+        return 0;
+    }
+
+
+    @Override
+    public boolean addRequest(Request request) {
+        try (Connection conn = ConnectionUtil.getConnection()){
+            String sqlStatement = "SELECT * FROM (SELECT request.reimb_id, request.reimb_amount, request.reimb_submitted, request.reimb_resolved, request.reimb_description, request.reimb_author, request.reimb_resolver, request_type.reimb_type, request.reimb_status_id\n" +
+                    "FROM ers_reimbursement AS request JOIN ers_reimbursement_type AS request_type ON request.reimb_type_id = request_type.reimb_type_ID) AS q JOIN ers_reimbursement_status AS status ON q.reimb_status_id=status.reimb_status_id;";
+
+            List<Request> requestList = new ArrayList<>();
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery(sqlStatement);
+            logger.info("The connection was established and the query was run against the database");
+            while (rs.next()) {
+                int requestId = rs.getInt("reimb_id");
+                double amount = rs.getDouble("reimb_amount");
+                Date submitted = rs.getDate("reimb_submitted");
+                Date resolved = rs.getDate("reimb_resolved");
+                String description = rs.getString("reimb_description");
+                int author = rs.getInt("reimb_author");
+                int resolver = rs.getInt("reimb_resolver");
+                String type = rs.getString("reimb_type");
+                String status = rs.getString("reimb_status");
+                Request a = new Request(requestId, amount, submitted, resolved, description, author, resolver, status, type);
+                requestList.add(a);
+            }
+
+            if (requestList.isEmpty()){
+                return false;
+            }else {
+                return true;
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            logger.error("The connection to the database failed.");
+        }
+
+        logger.info("Something went wrong and the query didn't run correctly.");
         return false;
     }
 

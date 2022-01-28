@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.security.NoSuchAlgorithmException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -21,9 +23,10 @@ class LoginServiceTest {
     private UserDTO testUser = new UserDTO();
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() throws NoSuchAlgorithmException {
         testUser.username = "agent";
-        testUser.password = "password";
+
+        testUser.password = LoginService.toHexString(LoginService.getSHA("password"));
         MockitoAnnotations.openMocks(this);
         testInstance = new LoginService(mockedDAO);
         Mockito.when(mockedDAO.login("agent")).thenReturn(testUser);
@@ -35,7 +38,7 @@ class LoginServiceTest {
         //assertNull(testInstance.login("agent", "password"));
 
         //Second test after mockedDAO returned testUser
-        assertEquals(testUser, testInstance.login(testUser.username, testUser.password));
+        assertEquals(testUser.username, testInstance.login(testUser.username, "password").username);
     }
 
     @Test

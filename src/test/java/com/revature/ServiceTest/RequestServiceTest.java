@@ -1,10 +1,7 @@
 package com.revature.ServiceTest;
 
 import com.revature.models.Request;
-import com.revature.models.UserDTO;
 import com.revature.repos.RequestDAO;
-import com.revature.repos.UserDAO;
-import com.revature.services.LoginService;
 import com.revature.services.RequestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +11,7 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RequestServiceTest {
+class RequestServiceTest {
 
     private RequestService testRequestService;
 
@@ -37,25 +34,25 @@ public class RequestServiceTest {
     }
 
     @Test
-    public void testAddRequest(){
+    void testAddRequest(){
         assertFalse(testRequestService.addRequest(request));
     }
 
     @Test
-    public void testDenyRequest(){
+    void testDenyRequest(){
         assertFalse(testRequestService.denyRequest(request.getRequestId()));
     }
 
     @Test
-    public void testApproveRequest(){
+    void testApproveRequest(){
         assertFalse(testRequestService.approveRequest(request.getRequestId()));
     }
 
     @Test
-    public void testShowAllRequests(){assertNull(testRequestService.showAllRequests());}
+    void testShowAllRequests(){assertNull(testRequestService.showAllRequests());}
 
     @Test
-    public void testShowByStatus(){
+    void testShowByStatus(){
         assertNull(testRequestService.showByStatus(request.getStatus()));
     }
 

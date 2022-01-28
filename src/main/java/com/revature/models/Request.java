@@ -1,13 +1,17 @@
 package com.revature.models;
 
+import java.sql.Date;
+
 public class Request {
 
+    private Date resolved;
+    private Date submitted;
     private int requestId;
     private double amount;
     private String description;
     private String status;
-    private int authorId;
-    private int resolverId;
+    private int author;
+    private int resolver;
     private String type;
 
     public Request(int requestId, double amount, String description, String status, int authorId, int resolverId, String type) {
@@ -15,9 +19,21 @@ public class Request {
         this.amount = amount;
         this.description = description;
         this.status = status;
-        this.authorId = authorId;
-        this.resolverId = resolverId;
+        this.author = authorId;
+        this.resolver = resolverId;
         this.type = type;
+    }
+
+    public Request(int requestId, double amount, Date submitted, Date resolved, String description, int author, int resolver, String status, String type) {
+        this.requestId = requestId;
+        this.amount = amount;
+        this.description = description;
+        this.status = status;
+        this.author = author;
+        this.resolver = resolver;
+        this.type = type;
+        this.submitted = submitted;
+        this.resolved = resolved;
     }
 
     public int getRequestId() {
@@ -53,19 +69,19 @@ public class Request {
     }
 
     public int getAuthorId() {
-        return authorId;
+        return author;
     }
 
     public void setAuthorId(int authorId) {
-        this.authorId = authorId;
+        this.author = authorId;
     }
 
-    public int getResolverId() {
-        return resolverId;
+    public int getResolver() {
+        return resolver;
     }
 
-    public void setResolverId(int resolverId) {
-        this.resolverId = resolverId;
+    public void setResolver(int resolver) {
+        this.resolver = resolver;
     }
 
     public String getType() {

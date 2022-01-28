@@ -9,14 +9,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
-public class LoginServiceTest {
+class LoginServiceTest {
 
     private LoginService testInstance;
-
 
     @Mock
     private UserDAO mockedDAO;
@@ -32,23 +30,26 @@ public class LoginServiceTest {
     }
 
     @Test
-    public void testLoginSuccess(){
-        assertFalse(testInstance.login("agent", "password"));
-        //assertTrue(testInstance.login("agent", "password"));
+    void testLoginSuccess(){
+        //First test when mockedDAO returned null
+        //assertNull(testInstance.login("agent", "password"));
+
+        //Second test after mockedDAO returned testUser
+        assertEquals(testUser, testInstance.login(testUser.username, testUser.password));
     }
 
     @Test
-    public void testLoginFailUsername(){
-        assertFalse(testInstance.login("notAgent", "password"));
+    void testLoginFailUsername(){
+        assertEquals(testUser, testInstance.login("notAgent", "password"));
     }
 
     @Test
-    public void testLoginFailPassword(){
-        assertFalse(testInstance.login("agent", "word"));
+    void testLoginFailPassword(){
+        assertNull(testInstance.login("agent", "word"));
     }
 
     @Test
-    public void testLoginFailBoth(){
-        assertFalse(testInstance.login("notAgent", "word"));
+    void testLoginFailBoth(){
+        assertNull(testInstance.login("notAgent", "word"));
     }
 }

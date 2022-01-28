@@ -24,41 +24,41 @@ public class RequestDAOImplTest {
     );
 
     @Test
-    @Order(1)
-    void testCreateRequest(){
-        //assertTrue(requestDAO.addRequest(testRequest));
-        assertFalse(requestDAO.addRequest(testRequest));
-    }
-
-    @Test
     @Order(2)
     void testGetAllRequests(){
         //assertEquals(null, requestDAO.showAllRequests());
 
-        //List<Request> requestList = requestDAO.showAllRequests();
-        //assertEquals(5, requestList.size());
+        List<Request> requestList = requestDAO.showAllRequests();
+        assertEquals(5, requestList.size());
 
-        assertNull(requestDAO.showAllRequests());
+        //assertNull(requestDAO.showAllRequests());
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     void testGetByStatus(){
-        assertEquals(null, requestDAO.showByStatus("Pending"));
+        List<Request> returnedList = requestDAO.showByStatus("pending");
+        assertEquals(4, returnedList.size());
+    }
+
+    @Test
+    @Order(6)
+    void testAddRequest(){
+        assertTrue(requestDAO.addRequest(testRequest));
     }
 
     @Test
     @Order(4)
     void testApproveRequest(){
-        //assertTrue(requestDAO.approveRequest(testRequest.getRequestId()));
-        assertFalse(requestDAO.approveRequest(testRequest.getRequestId()));
+        assertTrue(requestDAO.approveRequest(testRequest.getRequestId()));
+        //assertFalse(requestDAO.approveRequest(testRequest.getRequestId()));
     }
 
     @Test
     @Order(5)
     void testDenyRequest(){
-        //assertTrue(requestDAO.denyRequest(testRequest.getRequestId()));
-        assertFalse(requestDAO.denyRequest(testRequest.getRequestId()));
+        assertTrue(requestDAO.denyRequest(testRequest.getRequestId()));
+        //assertFalse(requestDAO.denyRequest(testRequest.getRequestId()));
     }
 }
 

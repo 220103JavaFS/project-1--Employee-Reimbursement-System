@@ -23,6 +23,12 @@ public class RequestService {
     public List<Request> showByStatus(String status){return requestDAO.showByStatus(status);}
 
     public boolean addRequest(RequestDTO requestDTO){
+
+//        if (requestDTO.amount <=0 || requestDTO.description == null || requestDTO.type == null || requestDTO.submitted == null
+//        || requestDTO.authorId <=0){
+//            return false;
+//        }
+
         return requestDAO.addRequest(requestDTO);
     }
 

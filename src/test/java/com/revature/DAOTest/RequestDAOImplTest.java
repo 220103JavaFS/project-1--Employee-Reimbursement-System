@@ -20,7 +20,7 @@ public class RequestDAOImplTest {
             500,
             "Business trip to New York",
             "Travel",
-            LocalDate.now()
+            "1/1/2022"
     );
 
     @Test

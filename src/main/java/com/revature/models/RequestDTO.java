@@ -9,9 +9,11 @@ public class RequestDTO {
     public String description;
     public String type;
     public int authorId;
-    public LocalDate submitted;
+    public String submitted;
 
-    public RequestDTO(double amount, String description, String type, LocalDate submitted) {
+    public RequestDTO(){}
+
+    public RequestDTO(double amount, String description, String type, String submitted) {
         this.amount = amount;
         this.description = description;
         this.type = type;

@@ -3,14 +3,13 @@ let requestTable = document.getElementById("requestTable");
 let loginDiv = document.getElementById("login_div");
 let requestFormBtn = document.getElementById("getRequestForm");
 let newRequestDiv = document.getElementById("newRequestDiv");
-/*
-let username = document.getElementById("username");
-let password = document.getElementById("password");
-*/
+let submitRequestBtn = document.getElementById("submitRequestBtn");
+
 const url = "http://localhost:8080/";
 
 loginBtn.addEventListener("click", loginFunc);
 requestFormBtn.addEventListener("click", createRequestFunc);
+submitRequestBtn.addEventListener("click", submitRequest);
 
 async function loginFunc(){
     let user = {
@@ -18,15 +17,15 @@ async function loginFunc(){
         password: document.getElementById("password_input").value
       }
 
-      let response = await fetch(
-        url+"login",
-        {
-          method : "POST",
-          
-          body : JSON.stringify(user),
-          credentials: "include"
-        }
-      );
+    let response = await fetch(
+      url+"login",
+      {
+        method : "POST",
+        
+        body : JSON.stringify(user),
+        credentials: "include"
+      }
+    );
 
     if (response.status === 200){
         console.log("The login post request succeeded");
@@ -60,16 +59,16 @@ async function logoutFunc(){
 }
 
 async function getRequests(){
-    let response = await fetch(url+"requests", {
-      credentials:"include"
-    });
-  
-    if(response.status===200){
-      let requests = await response.json();
-      populateRequests(requests);
-    } else{
-      console.log("There was an error getting your homes.")
-    }
+  let response = await fetch(url+"home", {
+    credentials:"include"
+  });
+
+  if(response.status===200){
+    let homes = await response.json();
+    populateHomes(homes);
+  } else{
+    console.log("There was an error getting your homes.")
+  }
      
 }
 
@@ -102,12 +101,11 @@ async function submitRequest(){
         credentials:"include"
       })
     
-      if(response.status===200){
-        getAllHomes();
-        console.log("Request added successfully");
-      }else{
-        console.log("Problem encountered when adding the request.");
-      }
+    if(response.status===200){
+      console.log("Request added successfully");
+    }else{
+      console.log("Problem encountered when adding the request.");
+    }
 }
 
 function createRequestFunc(){

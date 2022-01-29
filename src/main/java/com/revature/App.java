@@ -2,6 +2,7 @@ package com.revature;
 
 import com.revature.controllers.Controller;
 import com.revature.controllers.LoginController;
+import com.revature.controllers.RequestController;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 
@@ -14,7 +15,7 @@ public class App {
             config.addStaticFiles("C:\\Users\\zbyrs\\Desktop\\project-1--zachivo\\Project1-Frontend\\",
                     Location.EXTERNAL);
         });
-        configure(new LoginController());
+        configure(new LoginController(), new RequestController());
         app.start();
     }
 

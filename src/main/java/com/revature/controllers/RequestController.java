@@ -22,12 +22,15 @@ public class RequestController implements Controller{
     };
 
     private Handler addRequest = (ctx) -> {
+        logger.debug("Made it inside addRequest Handler");
         if (ctx.req.getSession(false) != null) {
+            logger.debug("Made it inside if/else in the Handler");
             RequestDTO requestDTO = ctx.bodyAsClass(RequestDTO.class);
-            if (requestDTO != null) {
-                if (requestService.addRequest(requestDTO))
-                logger.info("requestDTO was successfully created");
-                ctx.status(200);
+            if (requestService.addRequest(requestDTO)) {
+                if (requestService.addRequest(requestDTO)) {
+                    logger.info("requestDTO was successfully created");
+                    ctx.status(200);
+                }
             } else {
                 logger.error("There was a problem creating the DTO from the form input");
                 ctx.status(401);
@@ -59,7 +62,7 @@ public class RequestController implements Controller{
         app.get("/getByStatus", getByStatus);
         app.post("/addRequest", addRequest);
         app.patch("/approveRequest", approveRequest);
-        app.patch("/approveRequest", approveRequest);
+        app.patch("/denyRequest", denyRequest);
     }
 }
 

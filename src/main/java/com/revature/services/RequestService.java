@@ -22,7 +22,10 @@ public class RequestService {
     public List<Request> showAllRequests(){return requestDAO.showAllRequests();}
     public List<Request> showByStatus(String status){return requestDAO.showByStatus(status);}
 
-    public boolean addRequest(RequestDTO requestDTO){return requestDAO.addRequest(requestDTO);}
+    public boolean addRequest(RequestDTO requestDTO){
+        return requestDAO.addRequest(requestDTO);
+    }
+
     public boolean approveRequest(int reimbId){return  requestDAO.approveRequest(reimbId);}
     public boolean denyRequest(int reimbId){return  requestDAO.denyRequest(reimbId);}
 

@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 public class LoginService {
 
@@ -29,16 +30,14 @@ public class LoginService {
             if (userFromDb == null) {
                 logger.debug("userFromDb is null; login failed");
             } else {
-                try {
-                    String encryptedPass = LoginService.toHexString(LoginService.getSHA(password));
-                    if (encryptedPass.equals(userFromDb.password)) {
-                        logger.info("Input password and returned password match");
-                        return userFromDb;
-                    } else {
-                        logger.debug("The password provided did not match the password in the database");
-                    }
-                } catch (NoSuchAlgorithmException e) {
-                    logger.debug("Unsuccessful encryption of password");
+                String encryptedPass = encodePassword(password);
+                if (encryptedPass.equals(userFromDb.password)) {
+                    logger.info("Input password and returned password match");
+                    return userFromDb;
+                } else {
+                    logger.debug("The password provided did not match the password in the database");
+                    logger.debug("Passed in password: " + encryptedPass);
+                    logger.debug("Password in database: " + userFromDb.password);
                 }
             }
         }else{
@@ -48,6 +47,12 @@ public class LoginService {
         return null;
     }
 
+    private String encodePassword(String password){
+        byte[] bytes = password.getBytes();
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    /*
     public static byte[] getSHA(String input) throws NoSuchAlgorithmException {
         // Static getInstance method is called with hashing SHA
         MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -72,5 +77,6 @@ public class LoginService {
 
         return hexString.toString();
     }
+     */
 
 }

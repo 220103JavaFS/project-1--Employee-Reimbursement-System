@@ -38,11 +38,19 @@ public class RequestController implements Controller{
     };
 
     private Handler approveRequest = ctx -> {
+        if (ctx.req.getSession(false) != null) {
 
+        }else{
+            logger.debug("There isn't a session in progress");
+        }
     };
 
     private Handler denyRequest = ctx -> {
+        if (ctx.req.getSession(false) != null) {
 
+        }else{
+            logger.debug("There isn't a session in progress");
+        }
     };
 
     @Override

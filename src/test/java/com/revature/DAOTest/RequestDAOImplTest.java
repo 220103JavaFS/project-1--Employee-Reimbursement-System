@@ -7,6 +7,7 @@ import com.revature.repos.RequestDAOImpl;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class RequestDAOImplTest {
             500,
             "Business trip to New York",
             "Travel",
-            new Date("01-01-2022")
+            LocalDate.now()
     );
 
     @Test

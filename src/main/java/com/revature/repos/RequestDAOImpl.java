@@ -95,17 +95,17 @@ public class RequestDAOImpl implements RequestDAO {
         try (Connection conn = ConnectionUtil.getConnection()){
             String insertQuery = "INSERT INTO ers_reimbursement_status (reimb_status)\n" +
                     "VALUES ('pending');";
-            String returnStatusID = "SELECT reimb_status_id FROM ers_reimbursement_status;";
 
             Statement statement = conn.createStatement();
             statement.execute(insertQuery);
-            Statement statement2 = conn.createStatement();
-            ResultSet rs = statement2.executeQuery(returnStatusID);
-            rs.next();
-            int requestStatusID = rs.getInt("reimb_status_id");
-            logger.info("The connection was established and the query was run against the database");
-
-            return requestStatusID;
+            ResultSet rs = statement.getGeneratedKeys();
+            if (rs.next()) {
+                int requestStatusId = rs.getInt("reimb_status_id");
+                return requestStatusId;
+            }else{
+                logger.debug("A type id was not generated");
+                return 0;
+            }
 
 
 
@@ -125,22 +125,18 @@ public class RequestDAOImpl implements RequestDAO {
             String insertQuery = "INSERT INTO ers_reimbursement_type (reimb_type)\n" +
                     "VALUES (?);";
 
-
-            String returnStatusID = "SELECT reimb_type_id FROM ers_reimbursement_type;";
-
             PreparedStatement statement = conn.prepareStatement(insertQuery);
             statement.setString(1, type);
             statement.execute();
-            Statement statement2 = conn.createStatement();
-            ResultSet rs = statement2.executeQuery(returnStatusID);
-            rs.next();
-            int requestStatusID = rs.getInt("reimb_type_id");
             logger.info("The connection was established and the query was run against the database");
-
-            return requestStatusID;
-
-
-
+            ResultSet rs = statement.getGeneratedKeys();
+            if (rs.next()) {
+                int requestTypeId = rs.getInt("reimb_type_id");
+                return requestTypeId;
+            }else{
+                logger.debug("A type id was not generated");
+                return 0;
+            }
         }catch (SQLException e){
             e.printStackTrace();
             logger.error("The connection to the database failed.");
@@ -156,26 +152,30 @@ public class RequestDAOImpl implements RequestDAO {
         int statusId = addReimbStatus();
         int typeId = addReimbType(request.getType());
 
-        try (Connection conn = ConnectionUtil.getConnection()){
-            String sqlStatement = "INSERT INTO ers_reimbursement (reimb_amount, reimb_description, reimb_author, reimb_status_id, reimb_type_id)\n" +
-                    "VALUES(?, ?, ?, ?, ?);";
+        if (statusId != 0 && typeId != 0) {
+            try (Connection conn = ConnectionUtil.getConnection()) {
+                String sqlStatement = "INSERT INTO ers_reimbursement (reimb_amount, reimb_description, reimb_author, reimb_status_id, reimb_type_id)\n" +
+                        "VALUES(?, ?, ?, ?, ?);";
 
-            PreparedStatement statement = conn.prepareStatement(sqlStatement);
-            statement.setDouble(1, request.getAmount());
-            statement.setString(2, request.getDescription());
-            statement.setInt(3, request.getAuthorId());
-            statement.setInt(4, statusId);
-            statement.setInt(5, typeId);
-            statement.execute();
-            logger.info("The connection was established and the query was run against the database");
+                PreparedStatement statement = conn.prepareStatement(sqlStatement);
+                statement.setDouble(1, request.getAmount());
+                statement.setString(2, request.getDescription());
+                statement.setInt(3, request.getAuthorId());
+                statement.setInt(4, statusId);
+                statement.setInt(5, typeId);
+                statement.execute();
+                logger.info("The connection was established and the query was run against the database");
 
-            return true;
-        }catch (SQLException e){
-            e.printStackTrace();
-            logger.error("The connection to the database failed.");
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                logger.error("The connection to the database failed.");
+            }
+
+            logger.info("Something went wrong and the query didn't run correctly.");
+        }else{
+            logger.debug("Either the status or the type were not inserted correctly");
         }
-
-        logger.info("Something went wrong and the query didn't run correctly.");
         return false;
     }
 

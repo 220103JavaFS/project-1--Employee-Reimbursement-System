@@ -35,7 +35,7 @@ class LoginServiceTest {
         //assertNull(testInstance.login("agent", "password"));
 
         //Second test after mockedDAO returned testUser
-        assertEquals(testUser, testInstance.login(testUser.username, testUser.password));
+        assertEquals(testUser.username, testInstance.login(testUser.username, testUser.password).username);
     }
 
     @Test

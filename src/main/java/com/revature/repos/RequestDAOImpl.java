@@ -1,6 +1,7 @@
 package com.revature.repos;
 
 import com.revature.models.Request;
+import com.revature.models.RequestDTO;
 import com.revature.utils.ConnectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +18,10 @@ public class RequestDAOImpl implements RequestDAO {
     @Override
     public List<Request> showAllRequests() {
         try (Connection conn = ConnectionUtil.getConnection()){
-            String sqlStatement = "SELECT * FROM (SELECT request.reimb_id, request.reimb_amount, request.reimb_submitted, request.reimb_resolved, request.reimb_description, request.reimb_author, request.reimb_resolver, request_type.reimb_type, request.reimb_status_id\n" +
-                    "FROM ers_reimbursement AS request JOIN ers_reimbursement_type AS request_type ON request.reimb_type_id = request_type.reimb_type_ID) AS q JOIN ers_reimbursement_status AS status ON q.reimb_status_id=status.reimb_status_id;";
+            String sqlStatement = "SELECT r.reimb_id, r.reimb_amount, r.reimb_submitted, r.reimb_resolved, r.reimb_description, r.reimb_author, r.reimb_resolver, t.reimb_type, s.reimb_status\n" +
+                    "FROM ers_reimbursement AS r\n" +
+                    "JOIN ers_reimbursement_type AS t ON r.reimb_type_id = t.reimb_type_ID\n" +
+                    "JOIN ers_reimbursement_status AS s ON r.reimb_status_id = s.reimb_status_id;";
             List<Request> requestList = new ArrayList<>();
             Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery(sqlStatement);
@@ -54,9 +57,12 @@ public class RequestDAOImpl implements RequestDAO {
     @Override
     public List<Request> showByStatus(String status) {
         try (Connection conn = ConnectionUtil.getConnection()){
-            String sqlStatement = "SELECT * FROM (SELECT request.reimb_id, request.reimb_amount, request.reimb_submitted, request.reimb_resolved, request.reimb_description, request.reimb_author, request.reimb_resolver, request_type.reimb_type, request.reimb_status_id\n" +
-                    "FROM ers_reimbursement AS request JOIN ers_reimbursement_type AS request_type ON request.reimb_type_id = request_type.reimb_type_ID) AS q JOIN ers_reimbursement_status AS status ON q.reimb_status_id=status.reimb_status_id " +
-                    "WHERE status.reimb_status = ?;";
+            String sqlStatement = "SELECT r.reimb_id, r.reimb_amount, r.reimb_submitted, r.reimb_resolved, r.reimb_description, " +
+                    "r.reimb_author, r.reimb_resolver, t.reimb_type_id, t.reimb_type, s.reimb_status_id s.reimb_status " +
+                    "FROM ers_reimbursement AS r " +
+                    "JOIN ers_reimbursement_type AS t ON r.reimb_type_id = t.reimb_type_ID " +
+                    "JOIN ers_reimbursement_status AS s ON r.reimb_status_id = s.reimb_status_id " +
+                    "WHERE s.status = ?";
             List<Request> requestList = new ArrayList<>();
             PreparedStatement statement = conn.prepareStatement(sqlStatement);
             statement.setString(1, status);
@@ -148,9 +154,9 @@ public class RequestDAOImpl implements RequestDAO {
 
 
     @Override
-    public boolean addRequest(Request request) {
+    public boolean addRequest(RequestDTO request) {
         int statusId = addReimbStatus();
-        int typeId = addReimbType(request.getType());
+        int typeId = addReimbType(request.type);
 
         if (statusId != 0 && typeId != 0) {
             try (Connection conn = ConnectionUtil.getConnection()) {
@@ -158,9 +164,9 @@ public class RequestDAOImpl implements RequestDAO {
                         "VALUES(?, ?, ?, ?, ?);";
 
                 PreparedStatement statement = conn.prepareStatement(sqlStatement);
-                statement.setDouble(1, request.getAmount());
-                statement.setString(2, request.getDescription());
-                statement.setInt(3, request.getAuthorId());
+                statement.setDouble(1, request.amount);
+                statement.setString(2, request.description);
+                statement.setInt(3, request.authorId);
                 statement.setInt(4, statusId);
                 statement.setInt(5, typeId);
                 statement.execute();

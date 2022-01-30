@@ -4,9 +4,16 @@ let loginDiv = document.getElementById("login_div");
 let requestFormBtn = document.getElementById("getRequestForm");
 let newRequestDiv = document.getElementById("newRequestDiv");
 let submitRequestBtn = document.getElementById("submitRequestBtn");
+
+let wholeTableReimb = document.getElementById("tableReimbursements");
+let reimbHead = document.getElementById("reimbHead");
 let tableAllReimb = document.getElementById("tableReimb");
 let buttonShowAll = document.getElementById("reimbBtn");
 let requestStatus = document.getElementById("reqStatus");
+
+// tableAllReimb.style.display = "none";
+// buttonShowAll.style.display = "none";
+// requestStatus.style.display = "none";
 
 const url = "http://localhost:8080/";
 
@@ -36,6 +43,10 @@ async function loginFunc(){
         requestFormBtn.style.display = "inline";
         loginDiv.style.display = "none";
         requestTable.style.display = "table";
+
+        buttonShowAll.style.display = "inline";
+        requestStatus.style.display = "inline";
+        wholeTableReimb.style.display = "table";
     }else{
         console.log("Login unsuccessful");
     }
@@ -88,7 +99,12 @@ async function getRequests(){
 
   if(response.status===200){
     let records = await response.json();
+    
+    console.log(records);
+    
     populateRequests(records);
+    
+    
   } else{
     console.log("There was an error getting your requests.")
   }
@@ -96,8 +112,16 @@ async function getRequests(){
 }
 
 function populateRequests(requests){
+    let HeaderCreated = false;
+    console.log("Type of requests is " + typeof requests);
     tableAllReimb.innerHTML = "";
     for (let request of requests){
+      console.log("Type of request is " + typeof request);
+      // if (HeaderCreated==false){
+      //   for (let key in request){
+
+      //   }
+      // }
         let row = document.createElement("tr");
         for (let data in request){
             let td = document.createElement("td");

@@ -68,9 +68,9 @@
         <option value="approved">Approved</option>
         <option value="denied">Denied</option>
     </select>
-    <!--r.reimb_id, r.reimb_amount, r.reimb_submitted, r.reimb_resolved, r.reimb_description, r.reimb_author, r.reimb_resolver, t.reimb_type, s.reimb_status -->
-    <table class="table table-dark">
-        <thead>
+    <!--requestId, amount, submitted, resolved, description, author, resolver, status, type -->
+    <table class="table table-dark" id = "tableReimbursements"> 
+        <thead >
           <th>ID</th>
           <th>Amount</th>
           <th>Date Submitted</th>
@@ -78,8 +78,8 @@
           <th>Description</th>
           <th>Author</th>
           <th>Resolver</th>
-          <th>Type</th>
           <th>Status</th>
+          <th>Type</th>
         </thead>
         <tbody id="tableReimb">
     

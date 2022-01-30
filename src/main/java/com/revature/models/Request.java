@@ -4,37 +4,50 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 public class Request {
+//int requestId, double amount, Date submitted, Date resolved, String description, int author, int resolver, String status, String type
 
-    private Date resolved;
-    private Date submitted;
     private int requestId;
     private double amount;
+    private Timestamp submitted;
+    private Date resolved;
     private String description;
-    private String status;
     private int author;
     private int resolver;
+    private String status;
     private String type;
 
-    public Request(int requestId, double amount, String description, String status, int authorId, int resolverId, String type) {
-        this.requestId = requestId;
-        this.amount = amount;
-        this.description = description;
-        this.status = status;
-        this.author = authorId;
-        this.resolver = resolverId;
-        this.type = type;
-    }
+//    private Date resolved;
+//    private Date submitted;
+//    private int requestId;
+//    private double amount;
+//    private String description;
+//    private int author;
+//    private int resolver;
+//    private String status;
+//    private String type;
 
-    public Request(int requestId, double amount, Date submitted, Date resolved, String description, int author, int resolver, String status, String type) {
+//    public Request(int requestId, double amount, String description, String status, int authorId, int resolverId, String type) {
+//        this.requestId = requestId;
+//        this.amount = amount;
+//        this.description = description;
+//        this.status = status;
+//        this.author = authorId;
+//        this.resolver = resolverId;
+//        this.type = type;
+//    }
+
+    public Request(int requestId, double amount, Timestamp submitted, Date resolved, String description, int author, int resolver, String status, String type) {
         this.requestId = requestId;
         this.amount = amount;
-        this.description = description;
-        this.status = status;
-        this.author = author;
-        this.resolver = resolver;
-        this.type = type;
         this.submitted = submitted;
         this.resolved = resolved;
+        this.description = description;
+        this.author = author;
+        this.resolver = resolver;
+        this.status = status;
+        this.type = type;
+
+
     }
 
     public int getRequestId() {

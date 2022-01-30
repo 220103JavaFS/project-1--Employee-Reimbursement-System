@@ -31,14 +31,18 @@ public class RequestDAOImpl implements RequestDAO {
             while (rs.next()) {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
-                Date submitted = rs.getDate("reimb_submitted");
+                Timestamp submitted = rs.getTimestamp("reimb_submitted");
+
+                    logger.debug("Timestamp date not retrieved. Data type of variable "+ submitted.toString());
+
                 Date resolved = rs.getDate("reimb_resolved");
+//                if(resolved == null){submitted = new Date(System.currentTimeMillis());}
                 String description = rs.getString("reimb_description");
                 int author = rs.getInt("reimb_author");
                 int resolver = rs.getInt("reimb_resolver");
                 String type = rs.getString("reimb_type");
                 String status = rs.getString("reimb_status");
-
+//int requestId, double amount, Date submitted, Date resolved, String description, int author, int resolver, String status, String type)
                 Request a = new Request(requestId, amount, submitted, resolved, description, author, resolver, status, type);
                 requestList.add(a);
             }
@@ -74,7 +78,7 @@ public class RequestDAOImpl implements RequestDAO {
             while (rs.next()) {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
-                Date submitted = rs.getDate("reimb_submitted");
+                Timestamp submitted = rs.getTimestamp("reimb_submitted");
                 Date resolved = rs.getDate("reimb_resolved");
                 String description = rs.getString("reimb_description");
                 int author = rs.getInt("reimb_author");

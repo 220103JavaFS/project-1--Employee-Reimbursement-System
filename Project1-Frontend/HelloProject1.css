@@ -1,7 +1,3 @@
-#request_table{
-    display: none
-}
-
-#newRequestForm{
-    display: none
+#requestTable, #newRequestDiv, #getRequestForm{
+    display: none;
 }

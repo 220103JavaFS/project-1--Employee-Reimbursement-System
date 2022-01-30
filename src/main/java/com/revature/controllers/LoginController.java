@@ -18,11 +18,9 @@ public class LoginController implements Controller{
         UserDTO returnedUser = loginService.login(user.username, user.password);
         if(returnedUser != null){
             logger.info("Login attempt was successful");
-            ctx.header("Access-Control-Allow-Origin", "http://revature-220103-zach.s3-website-us-east-1.amazonaws.com");
-            ctx.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-            ctx.header("Access-Control-Allow-Credentials", "true");
             ctx.req.getSession();
             ctx.cookieStore("userRole", returnedUser.userRole);
+            ctx.cookieStore("userID", returnedUser.userID);
             ctx.status(200);
         }else {
             logger.error("Login attempt was unsuccessful");
@@ -34,7 +32,7 @@ public class LoginController implements Controller{
     private Handler logout = (ctx) -> {
         ctx.req.getSession().invalidate();
 
-        if(ctx.req.getSession(false) == null){
+        if (ctx.req.getSession(false) != null){
             logger.info("Logout successful");
             ctx.status(200);
         }else {

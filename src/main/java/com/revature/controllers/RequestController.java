@@ -1,5 +1,89 @@
 package com.revature.controllers;
 
-public class RequestController {
+import com.revature.models.Request;
+import com.revature.models.RequestDTO;
+import com.revature.models.UserDTO;
+import com.revature.services.RequestService;
+import io.javalin.Javalin;
+import io.javalin.http.Handler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+public class RequestController implements Controller{
+
+    RequestService requestService = new RequestService();
+    Logger logger = LoggerFactory.getLogger("Request Controller Logger");
+
+    private Handler getAllRequests = ctx -> {
+        logger.debug("Made it inside addRequest Handler");
+        if(ctx.req.getSession(false)!=null) { //getSession(false) will only return a Session object if the client
+            //sent a cookie along with the request that matches an open session.
+            ctx.json(requestService.showAllRequests());
+            ctx.status(200);
+        }else {
+            ctx.status(401);
+        }
+
+    };
+
+    private Handler getByStatus = ctx -> {
+
+        if(ctx.req.getSession(false)!=null){
+            String reimbStatus = ctx.pathParam("reimbStatus");
+            List<Request> requestByStatus = requestService.showByStatus(reimbStatus);
+            ctx.json(requestByStatus);
+            ctx.status(200);
+        }else {
+            ctx.status(401);
+        }
+
+    };
+
+    private Handler addRequest = (ctx) -> {
+        logger.debug("Made it inside addRequest Handler");
+        if (ctx.req.getSession(false) != null) {
+            logger.debug("Made it inside if/else in the Handler");
+            RequestDTO requestDTO = ctx.bodyAsClass(RequestDTO.class);
+            requestDTO.authorId = ctx.cookieStore("userID");
+
+            if (requestService.addRequest(requestDTO)) {
+                logger.info("requestDTO was successfully created");
+                ctx.status(200);
+            }
+             else {
+                logger.error("There was a problem creating the DTO from the form input");
+                ctx.status(401);
+            }
+        }else{
+            logger.debug("There isn't a session in progress");
+        }
+    };
+
+    private Handler approveRequest = ctx -> {
+        if (ctx.req.getSession(false) != null) {
+
+        }else{
+            logger.debug("There isn't a session in progress");
+        }
+    };
+
+    private Handler denyRequest = ctx -> {
+        if (ctx.req.getSession(false) != null) {
+
+        }else{
+            logger.debug("There isn't a session in progress");
+        }
+    };
+
+    @Override
+    public void addRoutes(Javalin app) {
+        app.get("/getAllRequests", getAllRequests);
+        app.get("/getByStatus/{reimbStatus}", getByStatus);
+        app.post("/addRequest", addRequest);
+        app.patch("/approveRequest", approveRequest);
+        app.patch("/denyRequest", denyRequest);
+    }
 }
 

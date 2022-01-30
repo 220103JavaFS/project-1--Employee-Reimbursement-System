@@ -14,7 +14,11 @@ public class RequestController implements Controller{
     Logger logger = LoggerFactory.getLogger("Request Controller Logger");
 
     private Handler getAllRequests = ctx -> {
-        if 
+        if (ctx.req.getSession(false) != null){
+            requestService.showAllRequests(ctx.cookieStore("userRole"), ctx.cookieStore("userID"));
+        }else{
+            logger.debug("There isn't a session in progress");
+        }
     };
 
     private Handler getByStatus = ctx -> {
@@ -22,16 +26,15 @@ public class RequestController implements Controller{
     };
 
     private Handler addRequest = (ctx) -> {
-        logger.debug("Made it inside addRequest Handler");
         if (ctx.req.getSession(false) != null) {
-            logger.debug("Made it inside if/else in the Handler");
             RequestDTO requestDTO = ctx.bodyAsClass(RequestDTO.class);
+            requestDTO.authorId = ctx.cookieStore("userID");
+
             if (requestService.addRequest(requestDTO)) {
-                if (requestService.addRequest(requestDTO)) {
-                    logger.info("requestDTO was successfully created");
-                    ctx.status(200);
-                }
-            } else {
+                logger.info("requestDTO was successfully created");
+                ctx.status(200);
+            }
+             else {
                 logger.error("There was a problem creating the DTO from the form input");
                 ctx.status(401);
             }

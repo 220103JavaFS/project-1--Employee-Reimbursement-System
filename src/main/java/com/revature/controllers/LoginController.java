@@ -20,6 +20,7 @@ public class LoginController implements Controller{
             logger.info("Login attempt was successful");
             ctx.req.getSession();
             ctx.cookieStore("userRole", returnedUser.userRole);
+            ctx.cookieStore("userID", returnedUser.userID);
             ctx.status(200);
         }else {
             logger.error("Login attempt was unsuccessful");

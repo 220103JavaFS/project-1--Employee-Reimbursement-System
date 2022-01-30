@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,15 +103,14 @@ public class RequestDAOImpl implements RequestDAO {
             String insertQuery = "INSERT INTO ers_reimbursement_status (reimb_status)\n" +
                     "VALUES ('pending');";
 
-            Statement statement = conn.createStatement();
-            statement.execute(insertQuery);
+            PreparedStatement statement = conn.prepareStatement(insertQuery,Statement.RETURN_GENERATED_KEYS);
+            statement.execute();
             ResultSet rs = statement.getGeneratedKeys();
             if (rs.next()) {
                 int requestStatusId = rs.getInt("reimb_status_id");
                 return requestStatusId;
             }else{
-                logger.debug("A status id was not generated");
-                return 0;
+                logger.debug("A reimbStatus id was not generated");
             }
 
         }catch (SQLException e){
@@ -129,7 +129,8 @@ public class RequestDAOImpl implements RequestDAO {
             String insertQuery = "INSERT INTO ers_reimbursement_type (reimb_type)\n" +
                     "VALUES (?);";
 
-            PreparedStatement statement = conn.prepareStatement(insertQuery);
+            PreparedStatement statement = conn.prepareStatement(insertQuery,Statement.RETURN_GENERATED_KEYS);
+
             statement.setString(1, type);
             statement.execute();
             logger.info("The connection was established and the query was run against the database");
@@ -138,7 +139,7 @@ public class RequestDAOImpl implements RequestDAO {
                 int requestTypeId = rs.getInt("reimb_type_id");
                 return requestTypeId;
             }else{
-                logger.debug("A type id was not generated");
+                logger.debug("A ReimbType id was not generated");
                 return 0;
             }
         }catch (SQLException e){
@@ -158,8 +159,9 @@ public class RequestDAOImpl implements RequestDAO {
 
         if (statusId != 0 && typeId != 0) {
             try (Connection conn = ConnectionUtil.getConnection()) {
-                String sqlStatement = "INSERT INTO ers_reimbursement (reimb_amount, reimb_description, reimb_author, reimb_status_id, reimb_type_id)\n" +
-                        "VALUES(?, ?, ?, ?, ?);";
+                String sqlStatement = "INSERT INTO ers_reimbursement (reimb_amount, reimb_description, reimb_author, "+
+                "reimb_status_id, reimb_type_id, reimb_submitted)\n" +
+                        "VALUES(?, ?, ?, ?, ?, ?);";
 
                 PreparedStatement statement = conn.prepareStatement(sqlStatement);
                 statement.setDouble(1, request.amount);
@@ -167,6 +169,8 @@ public class RequestDAOImpl implements RequestDAO {
                 statement.setInt(3, request.authorId);
                 statement.setInt(4, statusId);
                 statement.setInt(5, typeId);
+                statement.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+
                 statement.execute();
                 logger.info("The connection was established and the query was run against the database");
 

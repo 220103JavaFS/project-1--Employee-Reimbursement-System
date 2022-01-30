@@ -14,7 +14,7 @@ public class RequestController implements Controller{
     Logger logger = LoggerFactory.getLogger("Request Controller Logger");
 
     private Handler getAllRequests = ctx -> {
-
+        if 
     };
 
     private Handler getByStatus = ctx -> {

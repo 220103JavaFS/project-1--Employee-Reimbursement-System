@@ -109,11 +109,9 @@ public class RequestDAOImpl implements RequestDAO {
                 int requestStatusId = rs.getInt("reimb_status_id");
                 return requestStatusId;
             }else{
-                logger.debug("A type id was not generated");
+                logger.debug("A status id was not generated");
                 return 0;
             }
-
-
 
         }catch (SQLException e){
             e.printStackTrace();

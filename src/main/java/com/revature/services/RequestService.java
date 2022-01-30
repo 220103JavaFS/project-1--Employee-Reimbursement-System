@@ -15,11 +15,13 @@ public class RequestService {
         requestDAO = new RequestDAOImpl();
     }
 
-    public RequestService(RequestDAO RequestDAO) {
-        this.requestDAO = RequestDAO;
+    public RequestService(RequestDAO requestDAO) {
+        this.requestDAO = requestDAO;
     }
 
-    public List<Request> showAllRequests(){return requestDAO.showAllRequests();}
+    public List<Request> showAllRequests(int userId, int roleId){
+        return requestDAO.showAllRequests();
+    }
     public List<Request> showByStatus(String status){return requestDAO.showByStatus(status);}
 
     public boolean addRequest(RequestDTO requestDTO){

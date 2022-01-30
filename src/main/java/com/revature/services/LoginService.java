@@ -47,7 +47,7 @@ public class LoginService {
         return null;
     }
 
-    private String encodePassword(String password){
+    public String encodePassword(String password){
         byte[] bytes = password.getBytes();
         return Base64.getEncoder().encodeToString(bytes);
     }

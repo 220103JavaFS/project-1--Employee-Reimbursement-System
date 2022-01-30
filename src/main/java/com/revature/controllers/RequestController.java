@@ -23,6 +23,7 @@ public class RequestController implements Controller{
             List<Request> requestList = requestService.showAllRequests(userId, userRole);
             if (requestList != null){
                 logger.debug("The list of reimbursement requests was retrieved");
+                ctx.json(requestList);
                 ctx.status(200);
             }else{
                 logger.debug("The list of reimbursement requests was not retrieved");
@@ -38,8 +39,12 @@ public class RequestController implements Controller{
         if(ctx.req.getSession(false)!=null){
             String reimbStatus = ctx.pathParam("reimbStatus");
             List<Request> requestByStatus = requestService.showByStatus(reimbStatus);
-            ctx.json(requestByStatus);
-            ctx.status(200);
+            if (requestByStatus != null) {
+                ctx.json(requestByStatus);
+                ctx.status(200);
+            }else{
+                logger.debug("The returned list was empty or there was a problem");
+            }
         }else {
             ctx.status(401);
         }

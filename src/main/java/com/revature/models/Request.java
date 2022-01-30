@@ -2,14 +2,52 @@ package com.revature.models;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Request {
 //int requestId, double amount, Date submitted, Date resolved, String description, int author, int resolver, String status, String type
 
+    public int getRequestId() {
+        return requestId;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public String getSubmitted() {
+        return submitted;
+    }
+
+    public String getResolved() {
+        return resolved;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getAuthor() {
+        return author;
+    }
+
+    public int getResolver() {
+        return resolver;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getType() {
+        return type;
+    }
+
     private int requestId;
     private double amount;
-    private Timestamp submitted;
-    private Date resolved;
+    private String submitted;
+    private String resolved;
     private String description;
     private int author;
     private int resolver;
@@ -36,7 +74,7 @@ public class Request {
 //        this.type = type;
 //    }
 
-    public Request(int requestId, double amount, Timestamp submitted, Date resolved, String description, int author, int resolver, String status, String type) {
+    public Request(int requestId, double amount, String submitted, String resolved, String description, int author, int resolver, String status, String type) {
         this.requestId = requestId;
         this.amount = amount;
         this.submitted = submitted;
@@ -50,59 +88,5 @@ public class Request {
 
     }
 
-    public int getRequestId() {
-        return requestId;
-    }
 
-    public void setRequestId(int requestId) {
-        this.requestId = requestId;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public int getAuthorId() {
-        return author;
-    }
-
-    public void setAuthorId(int authorId) {
-        this.author = authorId;
-    }
-
-    public int getResolver() {
-        return resolver;
-    }
-
-    public void setResolver(int resolver) {
-        this.resolver = resolver;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }

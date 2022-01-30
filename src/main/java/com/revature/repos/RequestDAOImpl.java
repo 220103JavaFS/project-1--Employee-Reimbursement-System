@@ -31,11 +31,15 @@ public class RequestDAOImpl implements RequestDAO {
             while (rs.next()) {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
-                Timestamp submitted = rs.getTimestamp("reimb_submitted");
-
-                    logger.debug("Timestamp date not retrieved. Data type of variable "+ submitted.toString());
-
-                Date resolved = rs.getDate("reimb_resolved");
+                String submitted = rs.getTimestamp("reimb_submitted").toString();
+                Timestamp resolvedDate = rs.getTimestamp("reimb_resolved");
+                String resolved = "";
+                if (resolvedDate != null) {
+                    resolved = resolvedDate.toString();
+                }else{
+                    resolved = "N/A";
+                }
+                logger.debug("Date of resolved: " + resolved);
 //                if(resolved == null){submitted = new Date(System.currentTimeMillis());}
                 String description = rs.getString("reimb_description");
                 int author = rs.getInt("reimb_author");
@@ -44,6 +48,7 @@ public class RequestDAOImpl implements RequestDAO {
                 String status = rs.getString("reimb_status");
 //int requestId, double amount, Date submitted, Date resolved, String description, int author, int resolver, String status, String type)
                 Request a = new Request(requestId, amount, submitted, resolved, description, author, resolver, status, type);
+                logger.debug("Value of a.resolved: " + a.getResolved());
                 requestList.add(a);
             }
             if (!requestList.isEmpty()){
@@ -75,8 +80,12 @@ public class RequestDAOImpl implements RequestDAO {
             while (rs.next()) {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
-                Timestamp submitted = rs.getTimestamp("reimb_submitted");
-                Date resolved = rs.getDate("reimb_resolved");
+                String submitted = rs.getTimestamp("reimb_submitted").toString();
+                Timestamp resolvedDate = rs.getTimestamp("reimb_resolved");
+                String resolved = "";
+                if (resolvedDate != null) {
+                    resolved = resolvedDate.toString();
+                }
                 String description = rs.getString("reimb_description");
                 int author = rs.getInt("reimb_author");
                 int resolver = rs.getInt("reimb_resolver");
@@ -88,7 +97,11 @@ public class RequestDAOImpl implements RequestDAO {
 
             if (!requestList.isEmpty()){
                 return requestList;
+            }else{
+                logger.debug("No entries were retrieved");
             }
+
+            return requestList;
         }catch (SQLException e){
             e.printStackTrace();
             logger.error("The connection to the database failed.");

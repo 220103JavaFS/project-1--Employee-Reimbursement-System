@@ -22,6 +22,14 @@ public class RequestDAOImplTest {
             "Travel",
             "1/1/2022"
     );
+    private static Request testRequest = new Request(2, 33,"2022-01-29 16:24:20.356", null, "Lunch", 1, 0, "pending", "food");
+
+    @Test
+    void testGetRequest(){
+        List<Request> returnedList = requestDAO.showByStatus("pending");
+        Request request = returnedList.get(0);
+        assertEquals(testRequest, request);
+    }
 
     @Test
     @Order(2)

@@ -26,7 +26,7 @@ class LoginServiceTest {
     public void setUp() throws NoSuchAlgorithmException {
         testUser.username = "agent";
 
-        testUser.password = LoginService.toHexString(LoginService.getSHA("password"));
+        testUser.password = testInstance.encodePassword("password");
         MockitoAnnotations.openMocks(this);
         testInstance = new LoginService(mockedDAO);
         Mockito.when(mockedDAO.login("agent")).thenReturn(testUser);
@@ -39,5 +39,11 @@ class LoginServiceTest {
 
         //Second test after mockedDAO returned testUser
         assertEquals(testUser.username, testInstance.login(testUser.username, "password").username);
+    }
+
+    @Test
+    void testEncodePassword(){
+        System.out.println(testInstance.encodePassword("password2"));
+        //assertNull(testRequestService.showByStatus(pendingStatus));
     }
 }

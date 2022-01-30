@@ -22,7 +22,6 @@ public class UserDAOImpl implements UserDAO {
                     "WHERE users.ers_username = ?;";
 
             PreparedStatement statement = conn.prepareStatement(sql);
-
             statement.setString(1, username);
             ResultSet rs = statement.executeQuery();
 

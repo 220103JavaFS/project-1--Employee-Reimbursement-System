@@ -1,6 +1,7 @@
 package com.revature.ServiceTest;
 
 import com.revature.models.Request;
+import com.revature.models.RequestDTO;
 import com.revature.repos.RequestDAO;
 import com.revature.services.RequestService;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,42 +19,53 @@ class RequestServiceTest {
 
     @Mock
     private RequestDAO mockedRequestDAO;
-    private Request request = new Request(1, 1.1, "description", "statis", 1, 1, "type");
-
+    private RequestDTO requestDTO = new RequestDTO(1.1, "description", "type", "1-1-2022");
+    private String pendingStatus = "Pending";
+    private String approvedStatus = "Approved";
+    private String deniedStatus = "Denied";
+    private String associateRole = "Associate";
+    private String managerRole = "Manager";
 
     @BeforeEach
     public void setUp(){
 
         MockitoAnnotations.openMocks(this);
         testRequestService = new RequestService(mockedRequestDAO);
-        Mockito.when(mockedRequestDAO.addRequest(request)).thenReturn(false);
-        Mockito.when(mockedRequestDAO.denyRequest(request.getRequestId())).thenReturn(false);
-        Mockito.when(mockedRequestDAO.approveRequest(request.getRequestId())).thenReturn(false);
+        Mockito.when(mockedRequestDAO.addRequest(requestDTO)).thenReturn(false);
+        Mockito.when(mockedRequestDAO.denyRequest(1)).thenReturn(true);
+        Mockito.when(mockedRequestDAO.approveRequest(1)).thenReturn(true);
         Mockito.when(mockedRequestDAO.showAllRequests()).thenReturn(null);
-        Mockito.when(mockedRequestDAO.showByStatus(request.getStatus())).thenReturn(null);
+        Mockito.when(mockedRequestDAO.showByStatus(pendingStatus)).thenReturn(null);
+        Mockito.when(mockedRequestDAO.showByStatus(approvedStatus)).thenReturn(null);
+        Mockito.when(mockedRequestDAO.showByStatus(deniedStatus)).thenReturn(null);
     }
 
     @Test
     void testAddRequest(){
-        assertFalse(testRequestService.addRequest(request));
+        assertFalse(testRequestService.addRequest(requestDTO));
     }
 
     @Test
     void testDenyRequest(){
-        assertFalse(testRequestService.denyRequest(request.getRequestId()));
+        assertFalse(testRequestService.denyRequest(1, associateRole));
+        assertTrue(testRequestService.denyRequest(1, managerRole));
     }
 
     @Test
     void testApproveRequest(){
-        assertFalse(testRequestService.approveRequest(request.getRequestId()));
+        assertFalse(testRequestService.approveRequest(1, associateRole));
+        assertTrue(testRequestService.approveRequest(1, managerRole));
     }
 
     @Test
-    void testShowAllRequests(){assertNull(testRequestService.showAllRequests());}
+    void testShowAllRequests(){
+        assertNull(testRequestService.showAllRequests(1, managerRole));
+        assertNull(testRequestService.showAllRequests(2, associateRole));
+    }
 
     @Test
     void testShowByStatus(){
-        assertNull(testRequestService.showByStatus(request.getStatus()));
+        assertNull(testRequestService.showByStatus(pendingStatus));
     }
 
 

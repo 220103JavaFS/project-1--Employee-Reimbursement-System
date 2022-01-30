@@ -17,15 +17,20 @@ public class RequestController implements Controller{
     Logger logger = LoggerFactory.getLogger("Request Controller Logger");
 
     private Handler getAllRequests = ctx -> {
-        logger.debug("Made it inside addRequest Handler");
-        if(ctx.req.getSession(false)!=null) { //getSession(false) will only return a Session object if the client
-            //sent a cookie along with the request that matches an open session.
-            ctx.json(requestService.showAllRequests());
-            ctx.status(200);
-        }else {
-            ctx.status(401);
+        if (ctx.req.getSession(false) != null){
+            int userId = ctx.cookieStore("userID");
+            String userRole = ctx.cookieStore("userRole");
+            List<Request> requestList = requestService.showAllRequests(userId, userRole);
+            if (requestList != null){
+                logger.debug("The list of reimbursement requests was retrieved");
+                ctx.status(200);
+            }else{
+                logger.debug("The list of reimbursement requests was not retrieved");
+                ctx.status(400);
+            }
+        }else{
+            logger.debug("There isn't a session in progress");
         }
-
     };
 
     private Handler getByStatus = ctx -> {
@@ -42,9 +47,7 @@ public class RequestController implements Controller{
     };
 
     private Handler addRequest = (ctx) -> {
-        logger.debug("Made it inside addRequest Handler");
         if (ctx.req.getSession(false) != null) {
-            logger.debug("Made it inside if/else in the Handler");
             RequestDTO requestDTO = ctx.bodyAsClass(RequestDTO.class);
             requestDTO.authorId = ctx.cookieStore("userID");
 

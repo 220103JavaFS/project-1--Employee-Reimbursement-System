@@ -4,23 +4,38 @@ import com.revature.models.Request;
 import com.revature.models.RequestDTO;
 import com.revature.repos.RequestDAO;
 import com.revature.repos.RequestDAOImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class RequestService {
 
     private RequestDAO requestDAO;
+    Logger logger = LoggerFactory.getLogger("Request Service Logger");
 
     public RequestService(){
         requestDAO = new RequestDAOImpl();
     }
 
-    public RequestService(RequestDAO RequestDAO) {
-        this.requestDAO = RequestDAO;
+    public RequestService(RequestDAO requestDAO) {
+        this.requestDAO = requestDAO;
     }
 
-    public List<Request> showAllRequests(){return requestDAO.showAllRequests();}
-    public List<Request> showByStatus(String status){return requestDAO.showByStatus(status);}
+    public List<Request> showAllRequests(int userId, String userRole){
+        /*
+        if (userRole.equalsIgnoreCase("Manager")){
+            return requestDAO.showAllRequests();
+        }else {
+            return requestDAO.showUserRequests(userId);
+        }
+         */
+
+        return requestDAO.showAllRequests();
+    }
+    public List<Request> showByStatus(String status){
+        return requestDAO.showByStatus(status);
+    }
 
     public boolean addRequest(RequestDTO requestDTO){
 
@@ -32,8 +47,24 @@ public class RequestService {
         return requestDAO.addRequest(requestDTO);
     }
 
-    public boolean approveRequest(int reimbId){return  requestDAO.approveRequest(reimbId);}
-    public boolean denyRequest(int reimbId){return  requestDAO.denyRequest(reimbId);}
+    public boolean approveRequest(int reimbId, String userRole){
+        if (userRole.equalsIgnoreCase("Manager")) {
+            logger.info("The user has permission to deny this request");
+            return requestDAO.denyRequest(reimbId);
+        }else{
+            logger.info("The user does not have permission to deny this request");
+            return false;
+        }
+    }
+    public boolean denyRequest(int reimbId, String userRole){
+        if (userRole.equalsIgnoreCase("Manager")) {
+            logger.info("The user has permission to deny this request");
+            return requestDAO.denyRequest(reimbId);
+        }else{
+            logger.info("The user does not have permission to deny this request");
+            return false;
+        }
+    }
 
 
 }

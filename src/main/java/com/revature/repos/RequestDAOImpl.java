@@ -46,10 +46,7 @@ public class RequestDAOImpl implements RequestDAO {
                 Request a = new Request(requestId, amount, submitted, resolved, description, author, resolver, status, type);
                 requestList.add(a);
             }
-
-            if (requestList.isEmpty()){
-                return null;
-            }else {
+            if (!requestList.isEmpty()){
                 return requestList;
             }
         }catch (SQLException e){
@@ -89,9 +86,7 @@ public class RequestDAOImpl implements RequestDAO {
                 requestList.add(a);
             }
 
-            if (requestList.isEmpty()){
-                return null;
-            }else {
+            if (!requestList.isEmpty()){
                 return requestList;
             }
         }catch (SQLException e){
@@ -117,11 +112,7 @@ public class RequestDAOImpl implements RequestDAO {
                 return requestStatusId;
             }else{
                 logger.debug("A ReimbStatus id was not generated");
-                return 0;
             }
-
-
-
         }catch (SQLException e){
             e.printStackTrace();
             logger.error("The connection to the database failed.");

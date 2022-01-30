@@ -19,7 +19,8 @@ public class RequestDAOImpl implements RequestDAO {
     @Override
     public List<Request> showAllRequests() {
         try (Connection conn = ConnectionUtil.getConnection()){
-            String sqlStatement = "SELECT r.reimb_id, r.reimb_amount, r.reimb_submitted, r.reimb_resolved, r.reimb_description, r.reimb_author, r.reimb_resolver, t.reimb_type, s.reimb_status\n" +
+            String sqlStatement = "SELECT r.reimb_id, r.reimb_amount, r.reimb_submitted, r.reimb_resolved, " +
+                    "r.reimb_description, r.reimb_author, r.reimb_resolver, t.reimb_type, s.reimb_status\n" +
                     "FROM ers_reimbursement AS r\n" +
                     "JOIN ers_reimbursement_type AS t ON r.reimb_type_id = t.reimb_type_ID\n" +
                     "JOIN ers_reimbursement_status AS s ON r.reimb_status_id = s.reimb_status_id;";
@@ -37,13 +38,11 @@ public class RequestDAOImpl implements RequestDAO {
                 int resolver = rs.getInt("reimb_resolver");
                 String type = rs.getString("reimb_type");
                 String status = rs.getString("reimb_status");
+
                 Request a = new Request(requestId, amount, submitted, resolved, description, author, resolver, status, type);
                 requestList.add(a);
             }
-
-            if (requestList.isEmpty()){
-                return null;
-            }else {
+            if (!requestList.isEmpty()){
                 return requestList;
             }
         }catch (SQLException e){
@@ -58,12 +57,12 @@ public class RequestDAOImpl implements RequestDAO {
     @Override
     public List<Request> showByStatus(String status) {
         try (Connection conn = ConnectionUtil.getConnection()){
-            String sqlStatement = "SELECT r.reimb_id, r.reimb_amount, r.reimb_submitted, r.reimb_resolved, r.reimb_description, " +
-                    "r.reimb_author, r.reimb_resolver, t.reimb_type_id, t.reimb_type, s.reimb_status_id s.reimb_status " +
-                    "FROM ers_reimbursement AS r " +
-                    "JOIN ers_reimbursement_type AS t ON r.reimb_type_id = t.reimb_type_ID " +
-                    "JOIN ers_reimbursement_status AS s ON r.reimb_status_id = s.reimb_status_id " +
-                    "WHERE s.status = ?";
+            String sqlStatement = "SELECT r.reimb_id, r.reimb_amount, r.reimb_submitted, r.reimb_resolved, r.reimb_description,"+
+                    "r.reimb_author, r.reimb_resolver, t.reimb_type_id, t.reimb_type, s.reimb_status_id, s.reimb_status "+
+            "FROM ers_reimbursement AS r "+
+            "JOIN ers_reimbursement_type AS t ON r.reimb_type_id = t.reimb_type_ID "+
+            "JOIN ers_reimbursement_status AS s ON r.reimb_status_id = s.reimb_status_id "+
+            "WHERE s.reimb_status = ?;";
             List<Request> requestList = new ArrayList<>();
             PreparedStatement statement = conn.prepareStatement(sqlStatement);
             statement.setString(1, status);
@@ -83,9 +82,7 @@ public class RequestDAOImpl implements RequestDAO {
                 requestList.add(a);
             }
 
-            if (requestList.isEmpty()){
-                return null;
-            }else {
+            if (!requestList.isEmpty()){
                 return requestList;
             }
         }catch (SQLException e){
@@ -110,9 +107,8 @@ public class RequestDAOImpl implements RequestDAO {
                 int requestStatusId = rs.getInt("reimb_status_id");
                 return requestStatusId;
             }else{
-                logger.debug("A reimbStatus id was not generated");
+                logger.debug("A ReimbStatus id was not generated");
             }
-
         }catch (SQLException e){
             e.printStackTrace();
             logger.error("The connection to the database failed.");

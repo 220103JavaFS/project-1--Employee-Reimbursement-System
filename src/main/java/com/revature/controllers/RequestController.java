@@ -1,5 +1,6 @@
 package com.revature.controllers;
 
+import com.revature.models.Request;
 import com.revature.models.RequestDTO;
 import com.revature.models.UserDTO;
 import com.revature.services.RequestService;
@@ -8,6 +9,8 @@ import io.javalin.http.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class RequestController implements Controller{
 
     RequestService requestService = new RequestService();
@@ -15,13 +18,31 @@ public class RequestController implements Controller{
 
     private Handler getAllRequests = ctx -> {
         if (ctx.req.getSession(false) != null){
-            requestService.showAllRequests(ctx.cookieStore("userRole"), ctx.cookieStore("userID"));
+            int userId = ctx.cookieStore("userID");
+            String userRole = ctx.cookieStore("userRole");
+            List<Request> requestList = requestService.showAllRequests(userId, userRole);
+            if (requestList != null){
+                logger.debug("The list of reimbursement requests was retrieved");
+                ctx.status(200);
+            }else{
+                logger.debug("The list of reimbursement requests was not retrieved");
+                ctx.status(400);
+            }
         }else{
             logger.debug("There isn't a session in progress");
         }
     };
 
     private Handler getByStatus = ctx -> {
+
+        if(ctx.req.getSession(false)!=null){
+            String reimbStatus = ctx.pathParam("reimbStatus");
+            List<Request> requestByStatus = requestService.showByStatus(reimbStatus);
+            ctx.json(requestByStatus);
+            ctx.status(200);
+        }else {
+            ctx.status(401);
+        }
 
     };
 
@@ -62,7 +83,7 @@ public class RequestController implements Controller{
     @Override
     public void addRoutes(Javalin app) {
         app.get("/getAllRequests", getAllRequests);
-        app.get("/getByStatus", getByStatus);
+        app.get("/getByStatus/{reimbStatus}", getByStatus);
         app.post("/addRequest", addRequest);
         app.patch("/approveRequest", approveRequest);
         app.patch("/denyRequest", denyRequest);

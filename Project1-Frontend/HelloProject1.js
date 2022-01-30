@@ -4,12 +4,16 @@ let loginDiv = document.getElementById("login_div");
 let requestFormBtn = document.getElementById("getRequestForm");
 let newRequestDiv = document.getElementById("newRequestDiv");
 let submitRequestBtn = document.getElementById("submitRequestBtn");
+let tableAllReimb = document.getElementById("tableReimb");
+let buttonShowAll = document.getElementById("reimbBtn");
+let requestStatus = document.getElementById("reqStatus");
 
 const url = "http://localhost:8080/";
 
 loginBtn.addEventListener("click", loginFunc);
 requestFormBtn.addEventListener("click", createRequestFunc);
 submitRequestBtn.addEventListener("click", submitRequest);
+buttonShowAll.addEventListener("click", getRequests);
 
 async function loginFunc(){
     let user = {
@@ -58,32 +62,51 @@ async function loginFunc(){
 //     }
 // }
 
-// async function getRequests(){
-//   let response = await fetch(url+"home", {
-//     credentials:"include"
-//   });
+async function getRequests(){
+  let endPoint = url;
+  
+  if(requestStatus.value == "pending"){
+    endPoint = endPoint+ "getByStatus/pending";
+  }
+  else if(requestStatus.value == "all"){
+    endPoint = endPoint+ "getAllRequests";
+  }
+  else if(requestStatus.value == "approved"){
+    endPoint = endPoint+ "getByStatus/approved";
+  }
+  else if(requestStatus.value == "denied"){
+    endPoint = endPoint+ "getByStatus/denied";
+  }
+  else {
+    console.log("Incorrect request status");
+  }
 
-//   if(response.status===200){
-//     let homes = await response.json();
-//     populateHomes(homes);
-//   } else{
-//     console.log("There was an error getting your homes.")
-//   }
+    let response = await fetch(endPoint, {
+      credentials:"include"
+    });
+  
+
+  if(response.status===200){
+    let records = await response.json();
+    populateRequests(records);
+  } else{
+    console.log("There was an error getting your requests.")
+  }
      
-// }
+}
 
-// function populateRequests(requests){
-//     homeTable.innerHTML = "";
-//     for (let request of requests){
-//         let row = document.createElement("tr");
-//         for (let data in request){
-//             let td = document.createElement("td");
-//             td.innerText = request[data];
-//             row.appendChild(td);
-//         }
-//         request_table.appendChild(row);
-//     }
-// }
+function populateRequests(requests){
+    tableAllReimb.innerHTML = "";
+    for (let request of requests){
+        let row = document.createElement("tr");
+        for (let data in request){
+            let td = document.createElement("td");
+            td.innerText = request[data];
+            row.appendChild(td);
+        }
+        tableAllReimb.appendChild(row);
+    }
+}
 
 async function submitRequest(){
     // const timeElapsed = Date.now();

@@ -15,6 +15,7 @@ public class App {
 //            config.addStaticFiles("C:\\Users\\zbyrs\\Desktop\\project-1--zachivo\\Project1-Frontend\\",
 //                    Location.EXTERNAL);
             config.addStaticFiles("C:\\Users\\ivo00\\Documents\\revature\\project-1--zachivo\\Project1-Frontend",
+
                     Location.EXTERNAL);
         });
         configure(new LoginController(), new RequestController());

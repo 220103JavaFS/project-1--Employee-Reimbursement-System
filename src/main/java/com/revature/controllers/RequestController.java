@@ -1,5 +1,6 @@
 package com.revature.controllers;
 
+import com.revature.models.Request;
 import com.revature.models.RequestDTO;
 import com.revature.models.UserDTO;
 import com.revature.services.RequestService;
@@ -8,16 +9,35 @@ import io.javalin.http.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class RequestController implements Controller{
 
     RequestService requestService = new RequestService();
     Logger logger = LoggerFactory.getLogger("Request Controller Logger");
 
     private Handler getAllRequests = ctx -> {
+        logger.debug("Made it inside addRequest Handler");
+        if(ctx.req.getSession(false)!=null) { //getSession(false) will only return a Session object if the client
+            //sent a cookie along with the request that matches an open session.
+            ctx.json(requestService.showAllRequests());
+            ctx.status(200);
+        }else {
+            ctx.status(401);
+        }
 
     };
 
     private Handler getByStatus = ctx -> {
+
+        if(ctx.req.getSession(false)!=null){
+            String reimbStatus = ctx.pathParam("reimbStatus");
+            List<Request> requestByStatus = requestService.showByStatus(reimbStatus);
+            ctx.json(requestByStatus);
+            ctx.status(200);
+        }else {
+            ctx.status(401);
+        }
 
     };
 
@@ -60,7 +80,7 @@ public class RequestController implements Controller{
     @Override
     public void addRoutes(Javalin app) {
         app.get("/getAllRequests", getAllRequests);
-        app.get("/getByStatus", getByStatus);
+        app.get("/getByStatus/{reimbStatus}", getByStatus);
         app.post("/addRequest", addRequest);
         app.patch("/approveRequest", approveRequest);
         app.patch("/denyRequest", denyRequest);

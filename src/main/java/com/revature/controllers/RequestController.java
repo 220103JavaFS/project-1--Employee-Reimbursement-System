@@ -72,8 +72,12 @@ public class RequestController implements Controller{
 
     private Handler approveRequest = ctx -> {
         if (ctx.req.getSession(false) != null) {
+            logger.debug("Made it inside the approveRequest Handler");
+            logger.debug("Before ResolveDTO object is created");
             ResolveDTO resolveDTO = ctx.bodyAsClass(ResolveDTO.class);
             resolveDTO.authorId = ctx.cookieStore("userID");
+            logger.debug("After ResolveDTO object is created");
+            logger.debug("resolveDTO.authorID: " + resolveDTO.authorId);
 
             if (requestService.resolveRequest(resolveDTO)) {
                 logger.info("requestDTO was successfully created");
@@ -88,21 +92,12 @@ public class RequestController implements Controller{
         }
     };
 
-    private Handler denyRequest = ctx -> {
-        if (ctx.req.getSession(false) != null) {
-
-        }else{
-            logger.debug("There isn't a session in progress");
-        }
-    };
-
     @Override
     public void addRoutes(Javalin app) {
         app.get("/getAllRequests", getAllRequests);
         app.get("/getByStatus/{reimbStatus}", getByStatus);
         app.post("/addRequest", addRequest);
-        app.patch("/approveRequest", approveRequest);
-        app.patch("/denyRequest", denyRequest);
+        app.post("/approveRequest", approveRequest);
     }
 }
 

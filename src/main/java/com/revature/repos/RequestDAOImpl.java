@@ -116,7 +116,7 @@ public class RequestDAOImpl implements RequestDAO {
     public int addReimbStatus() {
         try (Connection conn = ConnectionUtil.getConnection()){
             String insertQuery = "INSERT INTO ers_reimbursement_status (reimb_status)\n" +
-                    "VALUES ('pending');";
+                    "VALUES ('Pending');";
 
             PreparedStatement statement = conn.prepareStatement(insertQuery,Statement.RETURN_GENERATED_KEYS);
             statement.execute();
@@ -238,21 +238,23 @@ public class RequestDAOImpl implements RequestDAO {
 
     @Override
     public boolean resolveRequest(ResolveDTO resolveDTO) {
+        int statusId = getStatusId(resolveDTO.requestID);
         try (Connection conn = ConnectionUtil.getConnection()){
             logger.info("Before queries are run in RequestDAOImpl resolve request");
             String updateQuery = "UPDATE ers_reimbursement_status SET reimb_status = ? WHERE reimb_status_id = ?;";
-            String addResolveDate = "UPDATE ers_reimbursement SET reimb_resolved = ? reimb_resolver = ? WHERE reimb_id = ?;";
+            String addResolveDate = "UPDATE ers_reimbursement SET reimb_resolved = ?, reimb_resolver = ? WHERE reimb_id = ?;";
 
             PreparedStatement statement = conn.prepareStatement(updateQuery);
             statement.setString(1, resolveDTO.resolveChoice);
-            statement.setInt(2, resolveDTO.requestID);
+            statement.setInt(2, statusId);
             statement.execute();
 
             PreparedStatement statement2 = conn.prepareStatement(addResolveDate);
-            statement.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
-            statement.setInt(2,resolveDTO.authorId);
-            statement.setInt(3, resolveDTO.requestID);
+            statement2.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+            statement2.setInt(2,resolveDTO.authorId);
+            statement2.setInt(3, resolveDTO.requestID);
             statement2.execute();
+
             logger.info("The connection was established and the resolveRequest queries were run against the database");
             return true;
         }catch (SQLException e){
@@ -262,6 +264,27 @@ public class RequestDAOImpl implements RequestDAO {
 
         logger.info("Something went wrong and the resolveRequest didn't run correctly.");
         return false;
+    }
+
+    private int getStatusId(int requestID) {
+        try (Connection conn = ConnectionUtil.getConnection()){
+            logger.info("Before queries are run in RequestDAOImpl resolve request");
+            String updateQuery = "SELECT reimb_status_id FROM ers_reimbursement WHERE reimb_id = ?;";
+
+            PreparedStatement statement = conn.prepareStatement(updateQuery);
+            statement.setInt(1, requestID);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()){
+                logger.info("Got the status ID");
+                return rs.getInt("reimb_status_id");
+            }else {
+                logger.info("Did not get the status ID");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            logger.error("The connection to the database failed for resolveRequest.");
+        }
+        return 0;
     }
 
 }

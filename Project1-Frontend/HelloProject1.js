@@ -1,5 +1,4 @@
 let loginBtn = document.getElementById("loginBtn");
-let requestTable = document.getElementById("requestTable");
 let loginDiv = document.getElementById("login_div");
 let requestFormBtn = document.getElementById("getRequestForm");
 let newRequestDiv = document.getElementById("newRequestDiv");
@@ -48,7 +47,6 @@ async function loginFunc(){
         console.log("The login post request succeeded");
         requestFormBtn.style.display = "inline";
         loginDiv.style.display = "none";
-        requestTable.style.display = "table";
 
         buttonShowAll.style.display = "inline";
         requestStatus.style.display = "inline";
@@ -57,6 +55,32 @@ async function loginFunc(){
     }else{
         console.log("Login unsuccessful");
     }
+}
+
+async function approveRequest(){
+  console.log("Made it inside approveRequest");
+  let request = {
+    resolveChoice: aprvSelect.value,
+    requestID: parseInt(aprvText.value)
+  }
+
+  console.log("Request has been created");
+
+  let response = await fetch(url+"approveRequest", {
+      method:"POST",
+      body:JSON.stringify(request),
+      credentials:"include"
+    })
+
+  console.log("fetch has finished running");
+  console.log("response status code: " + response.status);
+  
+  if(response.status===200){
+    console.log("Request approved/denied successfully");
+  }else{
+    console.log("Problem encountered when approving/denying the request.");
+  }
+
 }
 
 // async function logoutFunc(){
@@ -158,45 +182,23 @@ async function submitRequest(){
 }
 
 function createRequestFunc(){
-    requestTable.style.display = "none";
     newRequestDiv.style.display = "block";
-}
-
-async function approveRequest(){
- 
-  let request = {
-    
-    resolveChoice: aprvSelect.value,
-    requestID: aprvText.value
-  }
-
-  let response = await fetch(url+"approveRequest", {
-      method:"POST",
-      body:JSON.stringify(request),
-      credentials:"include"
-    })
-  
-  if(response.status===200){
-    console.log("Request added successfully");
-  }else{
-    console.log("Problem encountered when adding the request.");
-  }
 }
 
 async function getRequests(){
   let endPoint = url;
   
   if(requestStatus.value == "pending"){
-    endPoint = endPoint+ "getByStatus/pending";
+    endPoint = endPoint+ "getByStatus/Pending";
   }
   else if(requestStatus.value == "all"){
     endPoint = endPoint+ "getAllRequests";
   }
   else if(requestStatus.value == "approved"){
-    endPoint = endPoint+ "getByStatus/approved";
+    endPoint = endPoint+ "getByStatus/Approved";
   }
   else if(requestStatus.value == "denied"){
-    endPoint = endPoint+ "getByStatus/denied";
+    endPoint = endPoint+ "getByStatus/Denied";
   }
   else {
     console.log("Incorrect request status");

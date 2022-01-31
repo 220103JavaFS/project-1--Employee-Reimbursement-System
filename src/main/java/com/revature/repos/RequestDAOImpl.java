@@ -14,7 +14,11 @@ import java.util.List;
 
 public class RequestDAOImpl implements RequestDAO {
 
-    private Logger logger = LoggerFactory.getLogger("RequestDAO Logger");
+    private static final Logger logger = LoggerFactory.getLogger("RequestDAO Logger");
+    private static final String connectionEstablished = "The connection was established";
+    private static final String querySucceeded = "The query was run successfully";
+    private static final String exceptionMessage = "Either the connection or the query failed";
+    private static final String emptyResult = "The query succeeded, but no results were returned";
 
     @Override
     public List<Request> showAllRequests() {
@@ -26,7 +30,7 @@ public class RequestDAOImpl implements RequestDAO {
                     "JOIN ers_reimbursement_status AS s ON r.reimb_status_id = s.reimb_status_id;";
             List<Request> requestList = new ArrayList<>();
             ResultSet rs = statement.executeQuery(sqlStatement);
-            logger.info("The connection was established and the query was run against the database");
+            logger.info(connectionEstablished);
             while (rs.next()) {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
@@ -47,15 +51,19 @@ public class RequestDAOImpl implements RequestDAO {
                 Request a = new Request(requestId, amount, submitted, resolved, description, author, resolver, status, type);
                 requestList.add(a);
             }
+
             if (!requestList.isEmpty()){
-                return requestList;
+                logger.info(querySucceeded);
+            }else{
+                logger.info(emptyResult);
             }
+
+            return requestList;
         }catch (SQLException e){
             e.printStackTrace();
-            logger.error("The connection to the database failed.");
+            logger.error(exceptionMessage);
         }
 
-        logger.info("Something went wrong and the query didn't run correctly.");
         return null;
     }
 
@@ -72,7 +80,7 @@ public class RequestDAOImpl implements RequestDAO {
             PreparedStatement statement = conn.prepareStatement(sqlStatement);
             statement.setInt(1, userId);
             ResultSet rs = statement.executeQuery();
-            logger.info("The connection was established and the query was run against the database");
+            logger.info(connectionEstablished);
             while (rs.next()) {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
@@ -93,15 +101,19 @@ public class RequestDAOImpl implements RequestDAO {
                 Request a = new Request(requestId, amount, submitted, resolved, description, author, resolver, status, type);
                 requestList.add(a);
             }
+
             if (!requestList.isEmpty()){
-                return requestList;
+                logger.info(querySucceeded);
+            }else{
+                logger.info(emptyResult);
             }
+
+            return requestList;
         }catch (SQLException e){
             e.printStackTrace();
-            logger.error("The connection to the database failed.");
+            logger.error(exceptionMessage);
         }
 
-        logger.info("Something went wrong and the query didn't run correctly.");
         return null;
     }
 
@@ -118,7 +130,7 @@ public class RequestDAOImpl implements RequestDAO {
             PreparedStatement statement = conn.prepareStatement(sqlStatement);
             statement.setString(1, status);
             ResultSet rs = statement.executeQuery();
-            logger.info("The connection was established and the query was run against the database");
+            logger.info(connectionEstablished);
             while (rs.next()) {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
@@ -138,18 +150,17 @@ public class RequestDAOImpl implements RequestDAO {
             }
 
             if (!requestList.isEmpty()){
-                return requestList;
+                logger.info(querySucceeded);
             }else{
-                logger.debug("No entries were retrieved");
+                logger.info(emptyResult);
             }
 
             return requestList;
         }catch (SQLException e){
             e.printStackTrace();
-            logger.error("The connection to the database failed.");
+            logger.error(exceptionMessage);
         }
 
-        logger.info("Something went wrong and the query didn't run correctly.");
         return null;
     }
 
@@ -167,7 +178,7 @@ public class RequestDAOImpl implements RequestDAO {
             statement.setString(1, status);
             statement.setInt(2, userId);
             ResultSet rs = statement.executeQuery();
-            logger.info("The connection was established and the query was run against the database");
+            logger.info(connectionEstablished);
             while (rs.next()) {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
@@ -187,23 +198,24 @@ public class RequestDAOImpl implements RequestDAO {
             }
 
             if (!requestList.isEmpty()){
-                return requestList;
+                logger.info(querySucceeded);
             }else{
-                logger.debug("No entries were retrieved");
+                logger.info(emptyResult);
             }
 
             return requestList;
         }catch (SQLException e){
             e.printStackTrace();
-            logger.error("The connection to the database failed.");
+            logger.error(exceptionMessage);
         }
 
-        logger.info("Something went wrong and the query didn't run correctly.");
         return null;
     }
 
     @Override
     public int addReimbStatus() {
+        int requestStatusId = 0;
+
         try (Connection conn = ConnectionUtil.getConnection()){
             String insertQuery = "INSERT INTO ers_reimbursement_status (reimb_status)\n" +
                     "VALUES ('Pending');";
@@ -212,23 +224,26 @@ public class RequestDAOImpl implements RequestDAO {
             statement.execute();
             ResultSet rs = statement.getGeneratedKeys();
             if (rs.next()) {
-                int requestStatusId = rs.getInt("reimb_status_id");
-                return requestStatusId;
+                logger.info(querySucceeded);
+                requestStatusId = rs.getInt("reimb_status_id");
             }else{
-                logger.debug("A ReimbStatus id was not generated");
+                logger.debug("A ReimbStatusEd was not generated");
             }
+
+            logger.info(querySucceeded);
         }catch (SQLException e){
             e.printStackTrace();
-            logger.error("The connection to the database failed.");
+            logger.error(exceptionMessage);
         }
 
-        logger.info("Something went wrong and the query didn't run correctly.");
-        return 0;
+        return requestStatusId;
 
     }
 
     @Override
     public int addReimbType(String type) {
+        int requestTypeId = 0;
+
         try (Connection conn = ConnectionUtil.getConnection()){
             String insertQuery = "INSERT INTO ers_reimbursement_type (reimb_type)\n" +
                     "VALUES (?);";
@@ -237,22 +252,22 @@ public class RequestDAOImpl implements RequestDAO {
 
             statement.setString(1, type);
             statement.execute();
-            logger.info("The connection was established and the query was run against the database");
+            logger.info(connectionEstablished);
             ResultSet rs = statement.getGeneratedKeys();
             if (rs.next()) {
-                int requestTypeId = rs.getInt("reimb_type_id");
-                return requestTypeId;
+                logger.info(querySucceeded);
+                requestTypeId = rs.getInt("reimb_type_id");
             }else{
-                logger.debug("A ReimbType id was not generated");
-                return 0;
+                logger.debug("A ReimbTypeId was not generated");
             }
+
+            logger.info(querySucceeded);
         }catch (SQLException e){
             e.printStackTrace();
-            logger.error("The connection to the database failed.");
+            logger.error(exceptionMessage);
         }
 
-        logger.info("Something went wrong and the query didn't run correctly.");
-        return 0;
+        return requestTypeId;
     }
 
     @Override
@@ -262,6 +277,7 @@ public class RequestDAOImpl implements RequestDAO {
 
         if (statusId != 0 && typeId != 0) {
             try (Connection conn = ConnectionUtil.getConnection()) {
+                logger.info(connectionEstablished);
                 String sqlStatement = "INSERT INTO ers_reimbursement (reimb_amount, reimb_description, reimb_author, "+
                 "reimb_status_id, reimb_type_id, reimb_submitted)\n" +
                         "VALUES(?, ?, ?, ?, ?, ?);";
@@ -273,20 +289,17 @@ public class RequestDAOImpl implements RequestDAO {
                 statement.setInt(4, statusId);
                 statement.setInt(5, typeId);
                 statement.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
-
                 statement.execute();
-                logger.info("The connection was established and the query was run against the database");
 
+                logger.info(querySucceeded);
                 return true;
             } catch (SQLException e) {
-                e.printStackTrace();
-                logger.error("The connection to the database failed.");
+                logger.error(exceptionMessage);
             }
-
-            logger.info("Something went wrong and the query didn't run correctly.");
         }else{
-            logger.debug("Either the status or the type were not inserted correctly");
+            logger.debug("Either the statusId or the typeId were not retrieved");
         }
+
         return false;
     }
 
@@ -294,7 +307,7 @@ public class RequestDAOImpl implements RequestDAO {
     public boolean resolveRequest(ResolveDTO resolveDTO) {
         int statusId = getStatusId(resolveDTO.requestID);
         try (Connection conn = ConnectionUtil.getConnection()){
-            logger.info("Before queries are run in RequestDAOImpl resolve request");
+            logger.info(connectionEstablished);
             String updateQuery = "UPDATE ers_reimbursement_status SET reimb_status = ? WHERE reimb_status_id = ?;";
             String addResolveDate = "UPDATE ers_reimbursement SET reimb_resolved = ?, reimb_resolver = ? WHERE reimb_id = ?;";
 
@@ -309,36 +322,38 @@ public class RequestDAOImpl implements RequestDAO {
             statement2.setInt(3, resolveDTO.requestID);
             statement2.execute();
 
-            logger.info("The connection was established and the resolveRequest queries were run against the database");
+            logger.info(querySucceeded);
             return true;
         }catch (SQLException e){
             e.printStackTrace();
-            logger.error("The connection to the database failed for resolveRequest.");
+            logger.error(exceptionMessage);
         }
 
-        logger.info("Something went wrong and the resolveRequest didn't run correctly.");
         return false;
     }
 
     private int getStatusId(int requestID) {
+        int statusId = 0;
+
         try (Connection conn = ConnectionUtil.getConnection()){
-            logger.info("Before queries are run in RequestDAOImpl resolve request");
+            logger.info(connectionEstablished);
             String updateQuery = "SELECT reimb_status_id FROM ers_reimbursement WHERE reimb_id = ?;";
 
             PreparedStatement statement = conn.prepareStatement(updateQuery);
             statement.setInt(1, requestID);
             ResultSet rs = statement.executeQuery();
             if (rs.next()){
-                logger.info("Got the status ID");
-                return rs.getInt("reimb_status_id");
+                logger.info(querySucceeded);
+                statusId = rs.getInt("reimb_status_id");
             }else {
-                logger.info("Did not get the status ID");
+                logger.info("Did not get the statusId");
             }
         }catch (SQLException e){
             e.printStackTrace();
-            logger.error("The connection to the database failed for resolveRequest.");
+            logger.error(exceptionMessage);
         }
-        return 0;
+
+        return statusId;
     }
 
 }

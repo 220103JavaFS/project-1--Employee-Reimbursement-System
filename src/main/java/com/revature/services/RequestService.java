@@ -13,7 +13,7 @@ import java.util.List;
 public class RequestService {
 
     private RequestDAO requestDAO;
-    Logger logger = LoggerFactory.getLogger("Request Service Logger");
+    private static final Logger logger = LoggerFactory.getLogger("Request Service Logger");
 
     public RequestService(){
         requestDAO = new RequestDAOImpl();

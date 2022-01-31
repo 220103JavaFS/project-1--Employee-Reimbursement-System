@@ -12,7 +12,7 @@ import java.sql.SQLException;
 
 public class UserDAOImpl implements UserDAO {
 
-    Logger logger = LoggerFactory.getLogger("UserDao logger");
+    private static final Logger logger = LoggerFactory.getLogger("UserDao logger");
 
     @Override
     public UserDTO login(String username) {

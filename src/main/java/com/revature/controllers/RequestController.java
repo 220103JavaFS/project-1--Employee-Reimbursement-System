@@ -32,14 +32,16 @@ public class RequestController implements Controller{
             }
         }else{
             logger.debug("There isn't a session in progress");
+            ctx.status(400);
         }
     };
 
     private Handler getByStatus = ctx -> {
-
         if(ctx.req.getSession(false)!=null){
             String reimbStatus = ctx.pathParam("reimbStatus");
-            List<Request> requestByStatus = requestService.showByStatus(reimbStatus);
+            String userRole = ctx.cookieStore("userRole");
+            int userID = ctx.cookieStore("userID");
+            List<Request> requestByStatus = requestService.showByStatus(reimbStatus, userRole, userID);
             if (requestByStatus != null) {
                 ctx.json(requestByStatus);
                 ctx.status(200);
@@ -47,9 +49,8 @@ public class RequestController implements Controller{
                 logger.debug("The returned list was empty or there was a problem");
             }
         }else {
-            ctx.status(401);
+            ctx.status(400);
         }
-
     };
 
     private Handler addRequest = (ctx) -> {
@@ -59,33 +60,29 @@ public class RequestController implements Controller{
 
             if (requestService.addRequest(requestDTO)) {
                 logger.info("requestDTO was successfully created");
-                ctx.status(200);
-            }
-             else {
+                ctx.status(201);
+            } else {
                 logger.error("There was a problem creating the DTO from the form input");
-                ctx.status(401);
+                ctx.status(400);
             }
         }else{
+            ctx.status(400);
             logger.debug("There isn't a session in progress");
         }
     };
 
-    private Handler approveRequest = ctx -> {
+    private Handler resolveRequest = ctx -> {
         if (ctx.req.getSession(false) != null) {
-            logger.debug("Made it inside the approveRequest Handler");
-            logger.debug("Before ResolveDTO object is created");
             ResolveDTO resolveDTO = ctx.bodyAsClass(ResolveDTO.class);
             resolveDTO.authorId = ctx.cookieStore("userID");
-            logger.debug("After ResolveDTO object is created");
-            logger.debug("resolveDTO.authorID: " + resolveDTO.authorId);
-
-            if (requestService.resolveRequest(resolveDTO)) {
+            String userRole = ctx.cookieStore("userRole");
+            if (requestService.resolveRequest(resolveDTO, userRole)) {
                 logger.info("requestDTO was successfully created");
                 ctx.status(200);
             }
             else {
                 logger.error("There was a problem creating the DTO from the form input");
-                ctx.status(401);
+                ctx.status(304);
             }
         }else{
             logger.debug("There isn't a session in progress");
@@ -97,7 +94,7 @@ public class RequestController implements Controller{
         app.get("/getAllRequests", getAllRequests);
         app.get("/getByStatus/{reimbStatus}", getByStatus);
         app.post("/addRequest", addRequest);
-        app.post("/approveRequest", approveRequest);
+        app.post("/resolveRequest", resolveRequest);
     }
 }
 

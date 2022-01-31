@@ -1,7 +1,7 @@
 package com.revature.ServiceTest;
 
-import com.revature.models.Request;
 import com.revature.models.RequestDTO;
+import com.revature.models.ResolveDTO;
 import com.revature.repos.RequestDAO;
 import com.revature.services.RequestService;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +20,7 @@ class RequestServiceTest {
     @Mock
     private RequestDAO mockedRequestDAO;
     private RequestDTO requestDTO = new RequestDTO(1.1, "description", "type", "1-1-2022");
+    private ResolveDTO resolveDTO = new ResolveDTO();
     private String pendingStatus = "Pending";
     private String approvedStatus = "Approved";
     private String deniedStatus = "Denied";
@@ -32,8 +33,7 @@ class RequestServiceTest {
         MockitoAnnotations.openMocks(this);
         testRequestService = new RequestService(mockedRequestDAO);
         Mockito.when(mockedRequestDAO.addRequest(requestDTO)).thenReturn(false);
-        Mockito.when(mockedRequestDAO.denyRequest(1)).thenReturn(true);
-        Mockito.when(mockedRequestDAO.approveRequest(1)).thenReturn(true);
+        Mockito.when(mockedRequestDAO.resolveRequest(resolveDTO)).thenReturn(true);
         Mockito.when(mockedRequestDAO.showAllRequests()).thenReturn(null);
         Mockito.when(mockedRequestDAO.showByStatus(pendingStatus)).thenReturn(null);
         Mockito.when(mockedRequestDAO.showByStatus(approvedStatus)).thenReturn(null);
@@ -46,15 +46,9 @@ class RequestServiceTest {
     }
 
     @Test
-    void testDenyRequest(){
-        assertFalse(testRequestService.denyRequest(1, associateRole));
-        assertTrue(testRequestService.denyRequest(1, managerRole));
-    }
-
-    @Test
-    void testApproveRequest(){
-        assertFalse(testRequestService.approveRequest(1, associateRole));
-        assertTrue(testRequestService.approveRequest(1, managerRole));
+    void testResolveRequest(){
+        assertFalse(testRequestService.resolveRequest(resolveDTO, associateRole));
+        assertTrue(testRequestService.resolveRequest(resolveDTO, managerRole));
     }
 
     @Test
@@ -65,7 +59,7 @@ class RequestServiceTest {
 
     @Test
     void testShowByStatus(){
-        assertNull(testRequestService.showByStatus(pendingStatus));
+        assertNull(testRequestService.showByStatus(pendingStatus, "Associate", 2));
     }
 
 

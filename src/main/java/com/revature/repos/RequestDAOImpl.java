@@ -8,25 +8,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RequestDAOImpl implements RequestDAO {
 
-    Logger logger = LoggerFactory.getLogger("RequestDAO Logger");
+    private Logger logger = LoggerFactory.getLogger("RequestDAO Logger");
 
     @Override
     public List<Request> showAllRequests() {
-        try (Connection conn = ConnectionUtil.getConnection()){
+        try (Statement statement = ConnectionUtil.getConnection().createStatement()){
             String sqlStatement = "SELECT r.reimb_id, r.reimb_amount, r.reimb_submitted, r.reimb_resolved, " +
                     "r.reimb_description, r.reimb_author, r.reimb_resolver, t.reimb_type, s.reimb_status\n" +
                     "FROM ers_reimbursement AS r\n" +
                     "JOIN ers_reimbursement_type AS t ON r.reimb_type_id = t.reimb_type_ID\n" +
                     "JOIN ers_reimbursement_status AS s ON r.reimb_status_id = s.reimb_status_id;";
             List<Request> requestList = new ArrayList<>();
-            Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery(sqlStatement);
             logger.info("The connection was established and the query was run against the database");
             while (rs.next()) {
@@ -40,8 +38,6 @@ public class RequestDAOImpl implements RequestDAO {
                 }else{
                     resolved = "N/A";
                 }
-                logger.debug("Date of resolved: " + resolved);
-//                if(resolved == null){submitted = new Date(System.currentTimeMillis());}
                 String description = rs.getString("reimb_description");
                 int author = rs.getInt("reimb_author");
                 int resolver = rs.getInt("reimb_resolver");
@@ -49,7 +45,52 @@ public class RequestDAOImpl implements RequestDAO {
                 String status = rs.getString("reimb_status");
 //int requestId, double amount, Date submitted, Date resolved, String description, int author, int resolver, String status, String type)
                 Request a = new Request(requestId, amount, submitted, resolved, description, author, resolver, status, type);
-                logger.debug("Value of a.resolved: " + a.getResolved());
+                requestList.add(a);
+            }
+            if (!requestList.isEmpty()){
+                return requestList;
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            logger.error("The connection to the database failed.");
+        }
+
+        logger.info("Something went wrong and the query didn't run correctly.");
+        return null;
+    }
+
+    @Override
+    public List<Request> showUserRequests(int userId) {
+        try (Connection conn = ConnectionUtil.getConnection()){
+            String sqlStatement = "SELECT r.reimb_id, r.reimb_amount, r.reimb_submitted, r.reimb_resolved, " +
+                    "r.reimb_description, r.reimb_author, r.reimb_resolver, t.reimb_type, s.reimb_status\n" +
+                    "FROM ers_reimbursement AS r\n" +
+                    "JOIN ers_reimbursement_type AS t ON r.reimb_type_id = t.reimb_type_ID\n" +
+                    "JOIN ers_reimbursement_status AS s ON r.reimb_status_id = s.reimb_status_id" +
+                    "WHERE reimb_author = ?;";
+            List<Request> requestList = new ArrayList<>();
+            PreparedStatement statement = conn.prepareStatement(sqlStatement);
+            statement.setInt(1, userId);
+            ResultSet rs = statement.executeQuery();
+            logger.info("The connection was established and the query was run against the database");
+            while (rs.next()) {
+                int requestId = rs.getInt("reimb_id");
+                double amount = rs.getDouble("reimb_amount");
+                String submitted = rs.getTimestamp("reimb_submitted").toString();
+                Timestamp resolvedDate = rs.getTimestamp("reimb_resolved");
+                String resolved = "";
+                if (resolvedDate != null) {
+                    resolved = resolvedDate.toString();
+                }else{
+                    resolved = "N/A";
+                }
+                String description = rs.getString("reimb_description");
+                int author = rs.getInt("reimb_author");
+                int resolver = rs.getInt("reimb_resolver");
+                String type = rs.getString("reimb_type");
+                String status = rs.getString("reimb_status");
+//int requestId, double amount, Date submitted, Date resolved, String description, int author, int resolver, String status, String type)
+                Request a = new Request(requestId, amount, submitted, resolved, description, author, resolver, status, type);
                 requestList.add(a);
             }
             if (!requestList.isEmpty()){
@@ -76,6 +117,55 @@ public class RequestDAOImpl implements RequestDAO {
             List<Request> requestList = new ArrayList<>();
             PreparedStatement statement = conn.prepareStatement(sqlStatement);
             statement.setString(1, status);
+            ResultSet rs = statement.executeQuery();
+            logger.info("The connection was established and the query was run against the database");
+            while (rs.next()) {
+                int requestId = rs.getInt("reimb_id");
+                double amount = rs.getDouble("reimb_amount");
+                String submitted = rs.getTimestamp("reimb_submitted").toString();
+                Timestamp resolvedDate = rs.getTimestamp("reimb_resolved");
+                String resolved = "";
+                if (resolvedDate != null) {
+                    resolved = resolvedDate.toString();
+                }
+                String description = rs.getString("reimb_description");
+                int author = rs.getInt("reimb_author");
+                int resolver = rs.getInt("reimb_resolver");
+                String type = rs.getString("reimb_type");
+                String returnedStatus = rs.getString("reimb_status");
+                Request a = new Request(requestId, amount, submitted, resolved, description, author, resolver, returnedStatus, type);
+                requestList.add(a);
+            }
+
+            if (!requestList.isEmpty()){
+                return requestList;
+            }else{
+                logger.debug("No entries were retrieved");
+            }
+
+            return requestList;
+        }catch (SQLException e){
+            e.printStackTrace();
+            logger.error("The connection to the database failed.");
+        }
+
+        logger.info("Something went wrong and the query didn't run correctly.");
+        return null;
+    }
+
+    @Override
+    public List<Request> showUserRequestsByStatus(String status, int userId) {
+        try (Connection conn = ConnectionUtil.getConnection()){
+            String sqlStatement = "SELECT r.reimb_id, r.reimb_amount, r.reimb_submitted, r.reimb_resolved, r.reimb_description,"+
+                    "r.reimb_author, r.reimb_resolver, t.reimb_type_id, t.reimb_type, s.reimb_status_id, s.reimb_status "+
+                    "FROM ers_reimbursement AS r "+
+                    "JOIN ers_reimbursement_type AS t ON r.reimb_type_id = t.reimb_type_ID "+
+                    "JOIN ers_reimbursement_status AS s ON r.reimb_status_id = s.reimb_status_id "+
+                    "WHERE s.reimb_status = ?, reimb_author = ?;";
+            List<Request> requestList = new ArrayList<>();
+            PreparedStatement statement = conn.prepareStatement(sqlStatement);
+            statement.setString(1, status);
+            statement.setInt(2, userId);
             ResultSet rs = statement.executeQuery();
             logger.info("The connection was established and the query was run against the database");
             while (rs.next()) {
@@ -197,42 +287,6 @@ public class RequestDAOImpl implements RequestDAO {
         }else{
             logger.debug("Either the status or the type were not inserted correctly");
         }
-        return false;
-    }
-
-    @Override
-    public boolean approveRequest(int reimbId) {
-        try (Connection conn = ConnectionUtil.getConnection()){
-            String updateQuery = "UPDATE ers_reimbursement_status SET reimb_status = 'approved' WHERE reimb_status_id = ?;";
-
-            PreparedStatement statement = conn.prepareStatement(updateQuery);
-            statement.setInt(1, reimbId);
-            statement.execute();
-            return true;
-        }catch (SQLException e){
-            e.printStackTrace();
-            logger.error("The connection to the database failed.");
-        }
-
-        logger.info("Something went wrong and the query didn't run correctly.");
-        return false;
-    }
-
-    @Override
-    public boolean denyRequest(int reimbId) {
-        try (Connection conn = ConnectionUtil.getConnection()){
-            String updateQuery = "UPDATE ers_reimbursement_status SET reimb_status = 'denied' WHERE reimb_status_id = ?;";
-
-            PreparedStatement statement = conn.prepareStatement(updateQuery);
-            statement.setInt(1, reimbId);
-            statement.execute();
-            return true;
-        }catch (SQLException e){
-            e.printStackTrace();
-            logger.error("The connection to the database failed.");
-        }
-
-        logger.info("Something went wrong and the query didn't run correctly.");
         return false;
     }
 

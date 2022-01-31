@@ -24,57 +24,43 @@ public class RequestService {
     }
 
     public List<Request> showAllRequests(int userId, String userRole){
-        /*
         if (userRole.equalsIgnoreCase("Manager")){
+            logger.info("The user is a manager.  Returning all requests.");
             return requestDAO.showAllRequests();
         }else {
+            logger.info("The user is an associate.  Returning only requests associated with the current user.");
             return requestDAO.showUserRequests(userId);
         }
-         */
-
-        return requestDAO.showAllRequests();
     }
-    public List<Request> showByStatus(String status){
-        return requestDAO.showByStatus(status);
+
+    public List<Request> showByStatus(String status, String userRole, int userId){
+        if (userRole.equalsIgnoreCase("Manager")){
+            logger.info("The user is a manager.  Returning all requests.");
+            return requestDAO.showByStatus(status);
+        }else {
+            logger.info("The user is an associate.  Returning only requests associated with the current user.");
+            return requestDAO.showUserRequestsByStatus(status, userId);
+        }
     }
 
     public boolean addRequest(RequestDTO requestDTO){
 
-//        if (requestDTO.amount <=0 || requestDTO.description == null || requestDTO.type == null || requestDTO.submitted == null
-//        || requestDTO.authorId <=0){
-//            return false;
-//        }
+        if (requestDTO.amount <=0 || requestDTO.description == null || requestDTO.type == null || requestDTO.submitted == null
+        || requestDTO.authorId <=0){
+            logger.error("One or more fields provided are empty");
+            return false;
+        }
 
         return requestDAO.addRequest(requestDTO);
     }
 
-    public boolean approveRequest(int reimbId, String userRole){
-        if (userRole.equalsIgnoreCase("MANAGER")) {
-            logger.info("The user has permission to deny this request");
-            return requestDAO.approveRequest(reimbId);
-        }else{
-            logger.info("The user does not have permission to deny this request");
-            return false;
-        }
-    }
-    public boolean denyRequest(int reimbId, String userRole){
+    public boolean resolveRequest(ResolveDTO resolveDTO, String userRole){
         if (userRole.equalsIgnoreCase("Manager")) {
-            logger.info("The user has permission to deny this request");
-            return requestDAO.denyRequest(reimbId);
+            logger.info("The user has permission to resolve this request");
+            return requestDAO.resolveRequest(resolveDTO);
         }else{
-            logger.info("The user does not have permission to deny this request");
+            logger.info("The user does not have permission to resolve this request");
             return false;
         }
-    }
-
-    public boolean resolveRequest(ResolveDTO resolveDTO){
-//        if (userRole.equalsIgnoreCase("MANAGER")) {
-//            logger.info("The user has permission to deny this request");
-        logger.info("We are inside resolveRequest service method");
-            return requestDAO.resolveRequest(resolveDTO);
-//        }else{
-//            logger.info("The user does not have permission to deny this request");
-//            return false;
-//        }
     }
 }

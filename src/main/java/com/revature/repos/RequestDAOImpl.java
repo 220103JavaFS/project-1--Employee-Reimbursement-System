@@ -239,19 +239,20 @@ public class RequestDAOImpl implements RequestDAO {
     @Override
     public boolean resolveRequest(ResolveDTO resolveDTO) {
         try (Connection conn = ConnectionUtil.getConnection()){
+            logger.info("Before queries are run in RequestDAOImpl resolve request");
             String updateQuery = "UPDATE ers_reimbursement_status SET reimb_status = ? WHERE reimb_status_id = ?;";
             String addResolveDate = "UPDATE ers_reimbursement SET reimb_resolved = ? reimb_resolver = ? WHERE reimb_id = ?;";
 
             PreparedStatement statement = conn.prepareStatement(updateQuery);
             statement.setString(1, resolveDTO.resolveChoice);
-            statement.setInt(2,resolveDTO.authorId);
-            statement.setInt(3, resolveDTO.requestID);
+            statement.setInt(2, resolveDTO.requestID);
             statement.execute();
 
             PreparedStatement statement2 = conn.prepareStatement(addResolveDate);
-            statement.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));;
-            statement.setInt(2, resolveDTO.requestID);
-            statement.execute();
+            statement.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+            statement.setInt(2,resolveDTO.authorId);
+            statement.setInt(3, resolveDTO.requestID);
+            statement2.execute();
             logger.info("The connection was established and the resolveRequest queries were run against the database");
             return true;
         }catch (SQLException e){

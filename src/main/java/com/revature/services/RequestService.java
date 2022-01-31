@@ -70,6 +70,7 @@ public class RequestService {
     public boolean resolveRequest(ResolveDTO resolveDTO){
 //        if (userRole.equalsIgnoreCase("MANAGER")) {
 //            logger.info("The user has permission to deny this request");
+        logger.info("We are inside resolveRequest service method");
             return requestDAO.resolveRequest(resolveDTO);
 //        }else{
 //            logger.info("The user does not have permission to deny this request");

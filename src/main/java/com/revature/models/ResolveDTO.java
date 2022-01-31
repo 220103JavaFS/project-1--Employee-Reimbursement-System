@@ -1,6 +1,7 @@
 package com.revature.models;
 
 public class ResolveDTO {
+
     public String resolveChoice;
     public int requestID;
     public int authorId;

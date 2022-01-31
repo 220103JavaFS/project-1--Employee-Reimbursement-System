@@ -2,6 +2,7 @@ package com.revature.services;
 
 import com.revature.models.Request;
 import com.revature.models.RequestDTO;
+import com.revature.models.ResolveDTO;
 import com.revature.repos.RequestDAO;
 import com.revature.repos.RequestDAOImpl;
 import org.slf4j.Logger;
@@ -48,9 +49,9 @@ public class RequestService {
     }
 
     public boolean approveRequest(int reimbId, String userRole){
-        if (userRole.equalsIgnoreCase("Manager")) {
+        if (userRole.equalsIgnoreCase("MANAGER")) {
             logger.info("The user has permission to deny this request");
-            return requestDAO.denyRequest(reimbId);
+            return requestDAO.approveRequest(reimbId);
         }else{
             logger.info("The user does not have permission to deny this request");
             return false;
@@ -64,5 +65,16 @@ public class RequestService {
             logger.info("The user does not have permission to deny this request");
             return false;
         }
+    }
+
+    public boolean resolveRequest(ResolveDTO resolveDTO){
+//        if (userRole.equalsIgnoreCase("MANAGER")) {
+//            logger.info("The user has permission to deny this request");
+        logger.info("We are inside resolveRequest service method");
+            return requestDAO.resolveRequest(resolveDTO);
+//        }else{
+//            logger.info("The user does not have permission to deny this request");
+//            return false;
+//        }
     }
 }

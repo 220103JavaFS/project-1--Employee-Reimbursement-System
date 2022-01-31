@@ -2,6 +2,7 @@ package com.revature.controllers;
 
 import com.revature.models.Request;
 import com.revature.models.RequestDTO;
+import com.revature.models.ResolveDTO;
 import com.revature.models.UserDTO;
 import com.revature.services.RequestService;
 import io.javalin.Javalin;
@@ -71,7 +72,17 @@ public class RequestController implements Controller{
 
     private Handler approveRequest = ctx -> {
         if (ctx.req.getSession(false) != null) {
+            ResolveDTO resolveDTO = ctx.bodyAsClass(ResolveDTO.class);
+            resolveDTO.authorId = ctx.cookieStore("userID");
 
+            if (requestService.resolveRequest(resolveDTO)) {
+                logger.info("requestDTO was successfully created");
+                ctx.status(200);
+            }
+            else {
+                logger.error("There was a problem creating the DTO from the form input");
+                ctx.status(401);
+            }
         }else{
             logger.debug("There isn't a session in progress");
         }

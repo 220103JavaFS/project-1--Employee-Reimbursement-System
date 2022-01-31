@@ -2,6 +2,7 @@ package com.revature.repos;
 
 import com.revature.models.Request;
 import com.revature.models.RequestDTO;
+import com.revature.models.ResolveDTO;
 import com.revature.utils.ConnectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,7 +165,6 @@ public class RequestDAOImpl implements RequestDAO {
         return 0;
     }
 
-
     @Override
     public boolean addRequest(RequestDTO request) {
         int statusId = addReimbStatus();
@@ -235,4 +235,33 @@ public class RequestDAOImpl implements RequestDAO {
         logger.info("Something went wrong and the query didn't run correctly.");
         return false;
     }
+
+    @Override
+    public boolean resolveRequest(ResolveDTO resolveDTO) {
+        try (Connection conn = ConnectionUtil.getConnection()){
+            logger.info("Before queries are run in RequestDAOImpl resolve request");
+            String updateQuery = "UPDATE ers_reimbursement_status SET reimb_status = ? WHERE reimb_status_id = ?;";
+            String addResolveDate = "UPDATE ers_reimbursement SET reimb_resolved = ? reimb_resolver = ? WHERE reimb_id = ?;";
+
+            PreparedStatement statement = conn.prepareStatement(updateQuery);
+            statement.setString(1, resolveDTO.resolveChoice);
+            statement.setInt(2, resolveDTO.requestID);
+            statement.execute();
+
+            PreparedStatement statement2 = conn.prepareStatement(addResolveDate);
+            statement.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+            statement.setInt(2,resolveDTO.authorId);
+            statement.setInt(3, resolveDTO.requestID);
+            statement2.execute();
+            logger.info("The connection was established and the resolveRequest queries were run against the database");
+            return true;
+        }catch (SQLException e){
+            e.printStackTrace();
+            logger.error("The connection to the database failed for resolveRequest.");
+        }
+
+        logger.info("Something went wrong and the resolveRequest didn't run correctly.");
+        return false;
+    }
+
 }

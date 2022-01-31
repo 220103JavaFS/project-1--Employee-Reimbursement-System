@@ -31,23 +31,18 @@ public class RequestDAOImpl implements RequestDAO {
             List<Request> requestList = new ArrayList<>();
             ResultSet rs = statement.executeQuery(sqlStatement);
             logger.info(connectionEstablished);
+
             while (rs.next()) {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
                 String submitted = rs.getTimestamp("reimb_submitted").toString();
-                Timestamp resolvedDate = rs.getTimestamp("reimb_resolved");
-                String resolved = "";
-                if (resolvedDate != null) {
-                    resolved = resolvedDate.toString();
-                }else{
-                    resolved = "N/A";
-                }
+                String resolved = rs.getTimestamp("reimb_resolved").toString();
                 String description = rs.getString("reimb_description");
                 int author = rs.getInt("reimb_author");
                 int resolver = rs.getInt("reimb_resolver");
                 String type = rs.getString("reimb_type");
                 String status = rs.getString("reimb_status");
-//int requestId, double amount, Date submitted, Date resolved, String description, int author, int resolver, String status, String type)
+                //int requestId, double amount, Date submitted, Date resolved, String description, int author, int resolver, String status, String type)
                 Request a = new Request(requestId, amount, submitted, resolved, description, author, resolver, status, type);
                 requestList.add(a);
             }
@@ -81,6 +76,7 @@ public class RequestDAOImpl implements RequestDAO {
             statement.setInt(1, userId);
             ResultSet rs = statement.executeQuery();
             logger.info(connectionEstablished);
+
             while (rs.next()) {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
@@ -97,7 +93,7 @@ public class RequestDAOImpl implements RequestDAO {
                 int resolver = rs.getInt("reimb_resolver");
                 String type = rs.getString("reimb_type");
                 String status = rs.getString("reimb_status");
-//int requestId, double amount, Date submitted, Date resolved, String description, int author, int resolver, String status, String type)
+                //int requestId, double amount, Date submitted, Date resolved, String description, int author, int resolver, String status, String type)
                 Request a = new Request(requestId, amount, submitted, resolved, description, author, resolver, status, type);
                 requestList.add(a);
             }
@@ -131,6 +127,7 @@ public class RequestDAOImpl implements RequestDAO {
             statement.setString(1, status);
             ResultSet rs = statement.executeQuery();
             logger.info(connectionEstablished);
+
             while (rs.next()) {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
@@ -179,6 +176,7 @@ public class RequestDAOImpl implements RequestDAO {
             statement.setInt(2, userId);
             ResultSet rs = statement.executeQuery();
             logger.info(connectionEstablished);
+
             while (rs.next()) {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
@@ -227,7 +225,7 @@ public class RequestDAOImpl implements RequestDAO {
                 logger.info(querySucceeded);
                 requestStatusId = rs.getInt("reimb_status_id");
             }else{
-                logger.debug("A ReimbStatusEd was not generated");
+                logger.debug("A statusId was not generated");
             }
 
             logger.info(querySucceeded);
@@ -258,7 +256,7 @@ public class RequestDAOImpl implements RequestDAO {
                 logger.info(querySucceeded);
                 requestTypeId = rs.getInt("reimb_type_id");
             }else{
-                logger.debug("A ReimbTypeId was not generated");
+                logger.debug("A typeId was not generated");
             }
 
             logger.info(querySucceeded);

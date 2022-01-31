@@ -45,6 +45,7 @@ async function loginFunc(){
 
     if (response.status === 200){
         console.log("The login post request succeeded");
+        document.cookie = response.json();
         requestFormBtn.style.display = "inline";
         loginDiv.style.display = "none";
 
@@ -58,22 +59,16 @@ async function loginFunc(){
 }
 
 async function approveRequest(){
-  console.log("Made it inside approveRequest");
   let request = {
     resolveChoice: aprvSelect.value,
     requestID: parseInt(aprvText.value)
   }
 
-  console.log("Request has been created");
-
-  let response = await fetch(url+"approveRequest", {
+  let response = await fetch(url+"resolveRequest", {
       method:"POST",
       body:JSON.stringify(request),
       credentials:"include"
     })
-
-  console.log("fetch has finished running");
-  console.log("response status code: " + response.status);
   
   if(response.status===200){
     console.log("Request approved/denied successfully");

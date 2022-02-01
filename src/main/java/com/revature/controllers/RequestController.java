@@ -20,7 +20,7 @@ public class RequestController implements Controller{
     private Handler getAllRequests = ctx -> {
         if (ctx.req.getSession(false) != null){
             int userId = ctx.cookieStore("userID");
-            String userRole = ctx.cookieStore("userRole");
+            String userRole = ctx.cookie("userRole");
             List<Request> requestList = requestService.showAllRequests(userId, userRole);
             if (requestList != null){
                 logger.debug("The list of reimbursement requests was retrieved");
@@ -44,7 +44,7 @@ public class RequestController implements Controller{
     private Handler getByStatus = ctx -> {
         if(ctx.req.getSession(false)!=null){
             String reimbStatus = ctx.pathParam("reimbStatus");
-            String userRole = ctx.cookieStore("userRole");
+            String userRole = ctx.cookie("userRole");
             int userID = ctx.cookieStore("userID");
             List<Request> requestList = requestService.showByStatus(reimbStatus, userRole, userID);
             if (requestList != null) {
@@ -86,7 +86,7 @@ public class RequestController implements Controller{
         if (ctx.req.getSession(false) != null) {
             ResolveDTO resolveDTO = ctx.bodyAsClass(ResolveDTO.class);
             resolveDTO.authorId = ctx.cookieStore("userID");
-            String userRole = ctx.cookieStore("userRole");
+            String userRole = ctx.cookie("userRole");
             if (requestService.resolveRequest(resolveDTO, userRole)) {
                 logger.info("requestDTO was successfully created");
                 ctx.status(200);

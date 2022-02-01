@@ -37,7 +37,6 @@ async function loginFunc(){
       url+"login",
       {
         method : "POST",
-        
         body : JSON.stringify(user),
         credentials: "include"
       }
@@ -45,17 +44,48 @@ async function loginFunc(){
 
     if (response.status === 200){
         console.log("The login post request succeeded");
-        document.cookie = response.json();
+        let userRole = getCookie("userRole");
+        if (userRole === "MANAGER"){
+          console.log("The current user is a Manager");
+          wholeTableReimb.style.display = "table";
+          aprvForm.style.display = "block";
+        }
         requestFormBtn.style.display = "inline";
         loginDiv.style.display = "none";
 
         buttonShowAll.style.display = "inline";
         requestStatus.style.display = "inline";
-        wholeTableReimb.style.display = "table";
-        aprvForm.style.display = "block";
     }else{
         console.log("Login unsuccessful");
     }
+}
+
+function checkCookie() {
+  let username = getCookie("userRole");
+  if (username != "") {
+   alert("Welcome again " + username);
+  } else {
+    username = prompt("Please enter your name:", "");
+    if (username != "" && username != null) {
+      setCookie("username", username, 365);
+    }
+  }
+}
+
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
 }
 
 async function approveRequest(){
@@ -97,60 +127,6 @@ async function approveRequest(){
 //     }else{
 //         console.log("Logout unsuccessful");
 //     }
-// }
-// *******************************************************************************************************
-// async function getRequests(){
-//   let endPoint = url;
-  
-//   if(requestStatus.value == "pending"){
-//     endPoint = endPoint+ "getByStatus/pending";
-//   }
-//   else if(requestStatus.value == "all"){
-//     endPoint = endPoint+ "getAllRequests";
-//   }
-//   else if(requestStatus.value == "approved"){
-//     endPoint = endPoint+ "getByStatus/approved";
-//   }
-//   else if(requestStatus.value == "denied"){
-//     endPoint = endPoint+ "getByStatus/denied";
-//   }
-//   else {
-//     console.log("Incorrect request status");
-//   }
-
-//     let response = await fetch(endPoint, {
-//       credentials:"include"
-//     });
-  
-
-//   if(response.status===200){
-//     let records = await response.json();
-    
-//     console.log(records);
-    
-//     populateRequests(records);
-    
-    
-//   } else{
-//     console.log("There was an error getting your requests.")
-//   }
-     
-// }
-
-// function populateRequests(requests){
-    
-//     tableAllReimb.innerHTML = "";
-//     for (let request of requests){
-            
-//         let row = document.createElement("tr");
-//         for (let data in request){
-//             let td = document.createElement("td");
-//             td.innerText = request[data];
-//             row.appendChild(td);
-//         }
-        
-//       }
-//       tableAllReimb.appendChild(row);
 // }
 
 async function submitRequest(){

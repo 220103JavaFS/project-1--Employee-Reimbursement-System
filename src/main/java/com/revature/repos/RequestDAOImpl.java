@@ -36,7 +36,13 @@ public class RequestDAOImpl implements RequestDAO {
                 int requestId = rs.getInt("reimb_id");
                 double amount = rs.getDouble("reimb_amount");
                 String submitted = rs.getTimestamp("reimb_submitted").toString();
-                String resolved = rs.getTimestamp("reimb_resolved").toString();
+                Timestamp resolvedDate = rs.getTimestamp("reimb_resolved");
+                String resolved = "";
+                if (resolvedDate != null) {
+                    resolved = resolvedDate.toString();
+                }else{
+                    resolved = "N/A";
+                }
                 String description = rs.getString("reimb_description");
                 int author = rs.getInt("reimb_author");
                 int resolver = rs.getInt("reimb_resolver");

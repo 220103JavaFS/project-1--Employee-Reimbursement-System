@@ -19,7 +19,7 @@ public class LoginController implements Controller{
         if(returnedUser != null){
             logger.info("Login attempt was successful");
             ctx.req.getSession();
-            ctx.cookieStore("userRole", returnedUser.userRole);
+            ctx.cookie("userRole", returnedUser.userRole, 1*24*60*60*1000);
             ctx.cookieStore("userID", returnedUser.userID);
             ctx.status(200);
         }else {

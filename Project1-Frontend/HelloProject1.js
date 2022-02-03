@@ -64,12 +64,15 @@ async function loginFunc(){
 
 async function logoutFunc(){
   let response = await fetch(url + "logout", 
+  /*
   {
-      method:"POST",
+      method:"GET",
       body:JSON.stringify({
           credentials: "include"
       })
-  });
+  }
+  */
+  );
 
   if (response.status === 200){
       loginDiv.style.display = "block";

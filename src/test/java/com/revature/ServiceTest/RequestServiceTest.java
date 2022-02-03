@@ -61,6 +61,4 @@ class RequestServiceTest {
         assertNull(testRequestService.showByStatus(pendingStatus, "Associate", 2));
     }
 
-
-
 }

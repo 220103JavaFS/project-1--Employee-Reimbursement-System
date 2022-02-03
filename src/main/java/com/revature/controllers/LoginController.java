@@ -44,7 +44,7 @@ public class LoginController implements Controller{
     @Override
     public void addRoutes(Javalin app) {
         app.post("/login", this.loginAttempt);
-        app.post("/logout", this.logout);
+        app.get("/logout", this.logout);
     }
 
 }

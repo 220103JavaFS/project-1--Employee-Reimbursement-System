@@ -16,10 +16,9 @@ class RequestServiceTest {
 
     private RequestService testRequestService;
 
-
     @Mock
     private RequestDAO mockedRequestDAO;
-    private RequestDTO requestDTO = new RequestDTO(1.1, "description", "type", "1-1-2022");
+    private RequestDTO requestDTO = new RequestDTO(1.1, "description", "type", 2);
     private ResolveDTO resolveDTO = new ResolveDTO();
     private String pendingStatus = "Pending";
     private String approvedStatus = "Approved";

@@ -30,13 +30,13 @@ public class LoginController implements Controller{
     };
 
     private Handler logout = (ctx) -> {
-        ctx.req.getSession().invalidate();
-
         if (ctx.req.getSession(false) != null){
+            ctx.clearCookieStore();
+            ctx.req.getSession().invalidate();
             logger.info("Logout successful");
             ctx.status(200);
         }else {
-            logger.error("Logout unsuccessful");
+            logger.error("No session to log out of");
             ctx.status(401);
         }
     };

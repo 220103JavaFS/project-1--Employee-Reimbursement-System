@@ -1,27 +1,27 @@
 let loginBtn = document.getElementById("loginBtn");
 let loginDiv = document.getElementById("login_div");
+let logoutBtn = document.getElementById("logoutBtn");
 let requestFormBtn = document.getElementById("getRequestForm");
-let newRequestDiv = document.getElementById("newRequestDiv");
+let newRequestForm = document.getElementById("newRequestForm");
 let submitRequestBtn = document.getElementById("submitRequestBtn");
 
 let wholeTableReimb = document.getElementById("tableReimbursements");
 let reimbHead = document.getElementById("reimbHead");
 let tableAllReimb = document.getElementById("tableReimb");
+let showRequestDiv = document.getElementById("showRequestDiv");
 let buttonShowAll = document.getElementById("reimbBtn");
 let requestStatus = document.getElementById("reqStatus");
 
+let aprvDiv = document.getElementById("approveDenyDiv");
 let aprvForm = document.getElementById("approvalForm");
 let aprvBtn = document.getElementById("aprvBtn");
 let aprvText = document.getElementById("requestID");
 let aprvSelect = document.getElementById("selectAction");
 
-// tableAllReimb.style.display = "none";
-// buttonShowAll.style.display = "none";
-// requestStatus.style.display = "none";
-
 const url = "http://localhost:8080/";
 
 loginBtn.addEventListener("click", loginFunc);
+logoutBtn.addEventListener("click", logoutFunc);
 requestFormBtn.addEventListener("click", createRequestFunc);
 submitRequestBtn.addEventListener("click", submitRequest);
 buttonShowAll.addEventListener("click", getRequests);
@@ -45,19 +45,43 @@ async function loginFunc(){
     if (response.status === 200){
         console.log("The login post request succeeded");
         let userRole = getCookie("userRole");
-        if (userRole === "MANAGER"){
+        if (userRole === "Manager"){
           console.log("The current user is a Manager");
-          wholeTableReimb.style.display = "table";
-          aprvForm.style.display = "block";
+          aprvDiv.style.display = "block";
+        }else{
+          console.log("The current user is an Associate");
         }
+        wholeTableReimb.style.display = "table";
         requestFormBtn.style.display = "inline";
         loginDiv.style.display = "none";
-
-        buttonShowAll.style.display = "inline";
+        logoutBtn.style.display = "inline";
+        showRequestDiv.style.display = "block";
         requestStatus.style.display = "inline";
     }else{
         console.log("Login unsuccessful");
     }
+}
+
+async function logoutFunc(){
+  let response = await fetch(url + "logout", 
+  {
+      method:"POST",
+      body:JSON.stringify({
+          credentials: "include"
+      })
+  });
+
+  if (response.status === 200){
+      loginDiv.style.display = "block";
+      wholeTableReimb.style.display = "none";
+      logoutBtn.style.display = "none";
+      aprvDiv.style.display = "none";
+      showRequestDiv.style.display = "none";
+      requestFormBtn.style.display = "none";
+      console.log("Logout successful");
+  }else{
+      console.log("Logout unsuccessful");
+  }
 }
 
 function checkCookie() {
@@ -94,7 +118,7 @@ async function approveRequest(){
     requestID: parseInt(aprvText.value)
   }
 
-  let response = await fetch(url+"resolveRequest", {
+  let response = await fetch(url+"requests/resolve", {
       method:"POST",
       body:JSON.stringify(request),
       credentials:"include"
@@ -108,68 +132,53 @@ async function approveRequest(){
 
 }
 
-// async function logoutFunc(){
-//     let username = document.getElementById("username_input").value;
-//     let password = document.getElementById("password_input").value;
-//     let response = await fetch(url + "logout", 
-//     {
-//         method:"POST",
-//         body:JSON.stringify({
-//             username: username,
-//             password: password,
-//             credentials: "include"
-//         })
-//     });
-
-//     if (response.status === 200){
-//         login_div.style.display = "block";
-//         request_table.style.display = "none";
-//     }else{
-//         console.log("Logout unsuccessful");
-//     }
-// }
-
 async function submitRequest(){
-    // const timeElapsed = Date.now();
-    // const today = new Date(timeElapsed);
+  let amount = document.getElementById("requestAmount").value;
+  let type = document.getElementById("requestType").value;
+  let description = document.getElementById("requestDescription").value;
+
+  if (amount > 0 && description != ""){
     let request = {
-      amount: document.getElementById("requestAmount").value,
-      type: document.getElementById("requestType").value,
-      description: document.getElementById("requestDescription").value,
-      // submitted: today.toISOString()
+      amount: amount,
+      type: type,
+      description: description,
     }
 
-    let response = await fetch(url+"addRequest", {
+    let response = await fetch(url+"requests/add", {
         method:"POST",
         body:JSON.stringify(request),
         credentials:"include"
       })
     
-    if(response.status===200){
+    if(response.status===201){
       console.log("Request added successfully");
+      requestFormBtn.style.display = "inline";
+      newRequestForm.style.display = "none";
     }else{
       console.log("Problem encountered when adding the request.");
     }
+  }
 }
 
 function createRequestFunc(){
-    newRequestDiv.style.display = "block";
+    newRequestForm.style.display = "block";
+    requestFormBtn.style.display = "none";
 }
 
 async function getRequests(){
   let endPoint = url;
   
   if(requestStatus.value == "pending"){
-    endPoint = endPoint+ "getByStatus/Pending";
+    endPoint = endPoint+ "requests/Pending";
   }
   else if(requestStatus.value == "all"){
-    endPoint = endPoint+ "getAllRequests";
+    endPoint = endPoint+ "requests/all";
   }
   else if(requestStatus.value == "approved"){
-    endPoint = endPoint+ "getByStatus/Approved";
+    endPoint = endPoint+ "requests/Approved";
   }
   else if(requestStatus.value == "denied"){
-    endPoint = endPoint+ "getByStatus/Denied";
+    endPoint = endPoint+ "requests/Denied";
   }
   else {
     console.log("Incorrect request status");
@@ -182,9 +191,12 @@ async function getRequests(){
 
   if(response.status===200){
     let records = await response.json();
+    console.log("The list of requests was retrieved");
     populateRequests(records);
-  } else{
-    console.log("There was an error getting your requests.")
+  } else if (response.status===204){
+    console.log("The list of requests is empty");
+  }else{
+    console.log("There was an error getting your requests.");
   }
      
 }

@@ -9,8 +9,8 @@ import java.util.List;
 public interface RequestDAO {
     public List<Request> showAllRequests();
     public List<Request> showByStatus(String status);
-    List<Request> showUserRequests(int userId);
-    List<Request> showUserRequestsByStatus(String status, int userId);
+    public List<Request> showUserRequests(int userId);
+    public List<Request> showUserRequestsByStatus(String status, int userId);
 
     public int addReimbStatus();
     public int addReimbType(String type);

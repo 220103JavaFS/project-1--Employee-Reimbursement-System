@@ -9,14 +9,15 @@ public class RequestDTO {
     public String description;
     public String type;
     public int authorId;
-    public String submitted;
 
     public RequestDTO(){}
 
-    public RequestDTO(double amount, String description, String type, String submitted) {
+    public RequestDTO(double amount, String description, String type, int authorId) {
         this.amount = amount;
         this.description = description;
         this.type = type;
-        this.submitted = submitted;
+        this.authorId = authorId;
     }
+
+
 }

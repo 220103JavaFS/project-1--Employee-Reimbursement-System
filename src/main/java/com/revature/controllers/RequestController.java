@@ -3,7 +3,6 @@ package com.revature.controllers;
 import com.revature.models.Request;
 import com.revature.models.RequestDTO;
 import com.revature.models.ResolveDTO;
-import com.revature.models.UserDTO;
 import com.revature.services.RequestService;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
@@ -23,13 +22,13 @@ public class RequestController implements Controller{
             String userRole = ctx.cookie("userRole");
             List<Request> requestList = requestService.showAllRequests(userId, userRole);
             if (requestList != null){
-                logger.debug("The list of reimbursement requests was retrieved");
                 if (requestList.isEmpty()){
                     logger.info("The returned list is empty");
                     ctx.status(204);
                 }else{
-                    ctx.status(200);
+                    logger.debug("The list of reimbursement requests was retrieved");
                     ctx.json(requestList);
+                    ctx.status(200);
                 }
             }else{
                 logger.debug("The list of reimbursement requests was not retrieved");
@@ -70,10 +69,10 @@ public class RequestController implements Controller{
             requestDTO.authorId = ctx.cookieStore("userID");
 
             if (requestService.addRequest(requestDTO)) {
-                logger.info("requestDTO was successfully created");
+                logger.info("The request was successfully added");
                 ctx.status(201);
             } else {
-                logger.error("There was a problem creating the DTO from the form input");
+                logger.error("The request could not be added");
                 ctx.status(400);
             }
         }else{
@@ -85,7 +84,7 @@ public class RequestController implements Controller{
     private Handler resolveRequest = ctx -> {
         if (ctx.req.getSession(false) != null) {
             ResolveDTO resolveDTO = ctx.bodyAsClass(ResolveDTO.class);
-            resolveDTO.authorId = ctx.cookieStore("userID");
+            resolveDTO.resolverId = ctx.cookieStore("userID");
             String userRole = ctx.cookie("userRole");
             if (requestService.resolveRequest(resolveDTO, userRole)) {
                 logger.info("requestDTO was successfully created");
@@ -102,10 +101,10 @@ public class RequestController implements Controller{
 
     @Override
     public void addRoutes(Javalin app) {
-        app.get("/getAllRequests", getAllRequests);
-        app.get("/getByStatus/{reimbStatus}", getByStatus);
-        app.post("/addRequest", addRequest);
-        app.post("/resolveRequest", resolveRequest);
+        app.get("/requests/all", getAllRequests);
+        app.get("/requests/{reimbStatus}", getByStatus);
+        app.post("/requests/add", addRequest);
+        app.post("/requests/resolve", resolveRequest);
     }
 }
 

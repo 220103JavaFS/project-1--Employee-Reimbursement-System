@@ -30,7 +30,7 @@ public class LoginService {
             if (userFromDb == null) {
                 logger.debug("userFromDb is null; login failed");
             } else {
-                String encryptedPass = encodePassword(password);
+                String encryptedPass = LoginService.encodePassword(password);
                 if (encryptedPass.equals(userFromDb.password)) {
                     logger.info("Input password and returned password match");
                     return userFromDb;
@@ -47,7 +47,7 @@ public class LoginService {
         return null;
     }
 
-    public String encodePassword(String password){
+    public static String encodePassword(String password){
         byte[] bytes = password.getBytes();
         return Base64.getEncoder().encodeToString(bytes);
     }

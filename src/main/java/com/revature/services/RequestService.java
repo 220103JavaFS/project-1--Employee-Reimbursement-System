@@ -29,6 +29,7 @@ public class RequestService {
             return requestDAO.showAllRequests();
         }else {
             logger.info("The user is an associate.  Returning only requests associated with the current user.");
+            logger.info("The userId is: " + userId);
             return requestDAO.showUserRequests(userId);
         }
     }
@@ -44,14 +45,12 @@ public class RequestService {
     }
 
     public boolean addRequest(RequestDTO requestDTO){
-
-        if (requestDTO.amount <=0 || requestDTO.description == null || requestDTO.type == null || requestDTO.submitted == null
-        || requestDTO.authorId <=0){
+        if (requestDTO.amount <=0 || requestDTO.description == null || requestDTO.type == null || requestDTO.authorId <=0){
             logger.error("One or more fields provided are empty");
             return false;
+        }else {
+            return requestDAO.addRequest(requestDTO);
         }
-
-        return requestDAO.addRequest(requestDTO);
     }
 
     public boolean resolveRequest(ResolveDTO resolveDTO, String userRole){

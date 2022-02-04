@@ -104,7 +104,7 @@ public class RequestController implements Controller{
         app.get("/requests/all", getAllRequests);
         app.get("/requests/{reimbStatus}", getByStatus);
         app.post("/requests/add", addRequest);
-        app.post("/requests/resolve", resolveRequest);
+        app.patch("/requests/resolve", resolveRequest);
     }
 }
 

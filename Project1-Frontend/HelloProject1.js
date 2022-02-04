@@ -25,7 +25,7 @@ logoutBtn.addEventListener("click", logoutFunc);
 requestFormBtn.addEventListener("click", createRequestFunc);
 submitRequestBtn.addEventListener("click", submitRequest);
 buttonShowAll.addEventListener("click", getRequests);
-aprvBtn.addEventListener("click",approveRequest);
+aprvBtn.addEventListener("click", resolveRequest);
 
 async function loginFunc(){
     let user = {
@@ -95,7 +95,7 @@ function getCookie(cname) {
   return "";
 }
 
-async function approveRequest(){
+async function resolveRequest(){
   let resolveChoice = aprvSelect.value;
   let requestID = parseInt(aprvText.value);
 
@@ -106,7 +106,7 @@ async function approveRequest(){
     }
 
     let response = await fetch(url+"requests/resolve", {
-        method:"POST",
+        method:"PATCH",
         body:JSON.stringify(request),
         credentials:"include"
       })

@@ -29,7 +29,6 @@ public class RequestService {
             return requestDAO.showAllRequests();
         }else {
             logger.info("The user is an associate.  Returning only requests associated with the current user.");
-            logger.info("The userId is: " + userId);
             return requestDAO.showUserRequests(userId);
         }
     }
@@ -49,6 +48,7 @@ public class RequestService {
             logger.error("One or more fields provided are empty");
             return false;
         }else {
+            requestDTO.type = Character.toUpperCase(requestDTO.type.charAt(0)) + requestDTO.type.substring(1);
             return requestDAO.addRequest(requestDTO);
         }
     }
@@ -56,6 +56,11 @@ public class RequestService {
     public boolean resolveRequest(ResolveDTO resolveDTO, String userRole){
         if (userRole.equalsIgnoreCase("Manager")) {
             logger.info("The user has permission to resolve this request");
+            if (resolveDTO.resolveChoice.equalsIgnoreCase("Approve")){
+                resolveDTO.resolveChoice = "Approved";
+            }else{
+                resolveDTO.resolveChoice = "Denied";
+            }
             return requestDAO.resolveRequest(resolveDTO);
         }else{
             logger.info("The user does not have permission to resolve this request");

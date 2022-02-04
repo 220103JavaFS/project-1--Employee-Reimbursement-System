@@ -63,16 +63,7 @@ async function loginFunc(){
 }
 
 async function logoutFunc(){
-  let response = await fetch(url + "logout", 
-  /*
-  {
-      method:"GET",
-      body:JSON.stringify({
-          credentials: "include"
-      })
-  }
-  */
-  );
+  let response = await fetch(url + "logout");
 
   if (response.status === 200){
       loginDiv.style.display = "block";
@@ -81,21 +72,10 @@ async function logoutFunc(){
       aprvDiv.style.display = "none";
       showRequestDiv.style.display = "none";
       requestFormBtn.style.display = "none";
+      newRequestForm.style.display = "none";
       console.log("Logout successful");
   }else{
       console.log("Logout unsuccessful");
-  }
-}
-
-function checkCookie() {
-  let username = getCookie("userRole");
-  if (username != "") {
-   alert("Welcome again " + username);
-  } else {
-    username = prompt("Please enter your name:", "");
-    if (username != "" && username != null) {
-      setCookie("username", username, 365);
-    }
   }
 }
 
@@ -116,50 +96,59 @@ function getCookie(cname) {
 }
 
 async function approveRequest(){
-  let request = {
-    resolveChoice: aprvSelect.value,
-    requestID: parseInt(aprvText.value)
-  }
+  let resolveChoice = aprvSelect.value;
+  let requestID = parseInt(aprvText.value);
 
-  let response = await fetch(url+"requests/resolve", {
-      method:"POST",
-      body:JSON.stringify(request),
-      credentials:"include"
-    })
-  
-  if(response.status===200){
-    console.log("Request approved/denied successfully");
-  }else{
-    console.log("Problem encountered when approving/denying the request.");
-  }
-
-}
-
-async function submitRequest(){
-  let amount = document.getElementById("requestAmount").value;
-  let type = document.getElementById("requestType").value;
-  let description = document.getElementById("requestDescription").value;
-
-  if (amount > 0 && description != ""){
+  if (requestID > 0 && (resolveChoice.toLowerCase() === "approve" || resolveChoice.toLowerCase() === "deny")){
     let request = {
-      amount: amount,
-      type: type,
-      description: description,
+      resolveChoice: resolveChoice,
+      requestID: requestID
     }
 
-    let response = await fetch(url+"requests/add", {
+    let response = await fetch(url+"requests/resolve", {
         method:"POST",
         body:JSON.stringify(request),
         credentials:"include"
       })
     
-    if(response.status===201){
-      console.log("Request added successfully");
-      requestFormBtn.style.display = "inline";
-      newRequestForm.style.display = "none";
+    if(response.status===200){
+      console.log("Request approved/denied successfully");
     }else{
-      console.log("Problem encountered when adding the request.");
+      console.log("Problem encountered when approving/denying the request.");
     }
+  }else{
+    console.log("At least one of the values provided are not valid");
+  }
+
+}
+
+async function submitRequest(){
+  let requestAmount = document.getElementById("requestAmount").value;
+  let requestType = document.getElementById("requestType").value;
+  let requestDescription = document.getElementById("requestDescription").value;
+
+  if (requestAmount > 0 && requestDescription != ""){
+    let request = {
+      amount: requestAmount,
+      type: requestType,
+      description: requestDescription,
+    }
+
+    let response = await fetch(url+"requests/add", {
+      method:"POST",
+      body:JSON.stringify(request),
+      credentials:"include"
+    })
+  
+  if(response.status===201){
+    console.log("Request added successfully");
+    requestFormBtn.style.display = "inline";
+    newRequestForm.style.display = "none";
+  }else{
+    console.log("Problem encountered when adding the request.");
+  }
+  }else{
+    console.console.log("One of the fields are empty");
   }
 }
 

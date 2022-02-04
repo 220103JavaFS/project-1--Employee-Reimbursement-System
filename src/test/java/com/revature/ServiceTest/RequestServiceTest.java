@@ -1,5 +1,6 @@
 package com.revature.ServiceTest;
 
+import com.revature.models.Request;
 import com.revature.models.RequestDTO;
 import com.revature.models.ResolveDTO;
 import com.revature.repos.RequestDAO;
@@ -10,16 +11,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class RequestServiceTest {
 
     private RequestService testRequestService;
+    List<Request> requestList = new ArrayList<>();
 
     @Mock
     private RequestDAO mockedRequestDAO;
     private RequestDTO requestDTO = new RequestDTO(1.1, "description", "type", 2);
-    private ResolveDTO resolveDTO = new ResolveDTO();
+    private ResolveDTO resolveDTO = new ResolveDTO("Approve", 42, 1);
     private String pendingStatus = "Pending";
     private String approvedStatus = "Approved";
     private String deniedStatus = "Denied";
@@ -28,20 +33,20 @@ class RequestServiceTest {
 
     @BeforeEach
     public void setUp(){
-
         MockitoAnnotations.openMocks(this);
         testRequestService = new RequestService(mockedRequestDAO);
-        Mockito.when(mockedRequestDAO.addRequest(requestDTO)).thenReturn(false);
+        Mockito.when(mockedRequestDAO.addRequest(requestDTO)).thenReturn(true);
         Mockito.when(mockedRequestDAO.resolveRequest(resolveDTO)).thenReturn(true);
-        Mockito.when(mockedRequestDAO.showAllRequests()).thenReturn(null);
-        Mockito.when(mockedRequestDAO.showByStatus(pendingStatus)).thenReturn(null);
-        Mockito.when(mockedRequestDAO.showByStatus(approvedStatus)).thenReturn(null);
-        Mockito.when(mockedRequestDAO.showByStatus(deniedStatus)).thenReturn(null);
+        Mockito.when(mockedRequestDAO.showAllRequests()).thenReturn(new ArrayList<>());
+        Mockito.when(mockedRequestDAO.showByStatus(pendingStatus)).thenReturn(new ArrayList<>());
+        Mockito.when(mockedRequestDAO.showByStatus(approvedStatus)).thenReturn(new ArrayList<>());
+        Mockito.when(mockedRequestDAO.showByStatus(deniedStatus)).thenReturn(new ArrayList<>());
     }
 
     @Test
     void testAddRequest(){
-        assertFalse(testRequestService.addRequest(requestDTO));
+        assertTrue(testRequestService.addRequest(requestDTO));
+        assertFalse(testRequestService.addRequest(new RequestDTO(0, "description2", "", 1)));
     }
 
     @Test
@@ -52,13 +57,14 @@ class RequestServiceTest {
 
     @Test
     void testShowAllRequests(){
-        assertNull(testRequestService.showAllRequests(1, managerRole));
-        assertNull(testRequestService.showAllRequests(2, associateRole));
+        assertEquals(requestList, testRequestService.showAllRequests(1, managerRole));
+        assertEquals(requestList, testRequestService.showAllRequests(2, associateRole));
     }
 
     @Test
     void testShowByStatus(){
-        assertNull(testRequestService.showByStatus(pendingStatus, "Associate", 2));
+        assertEquals(requestList, testRequestService.showByStatus(approvedStatus, managerRole, 1));
+        assertEquals(requestList, testRequestService.showByStatus(pendingStatus, associateRole, 2));
     }
 
 }

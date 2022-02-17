@@ -22,33 +22,6 @@ Employees must select the type of reimbursement as: LODGING, TRAVEL, FOOD, or OT
 **Activity Diagram**
 ![](./imgs/activity.jpg)
 
-## Technologies used
-
-* JDBC to connect to an AWS Postgres database
-* Javalin for dynamic web application development
-* HTML to create and structure the webpage
-* Javalin to implement logic for the webpage and connect to server-side components
-* Java for creating the server-side application and all its business logic
-* JUnit and Mockito for creating tests to be used for Test Driven Development
-* Logback for providing persistent logging where appropriate
-
-## Features
-
-* All employees in the company can login and submit requests for reimbursement
-* Employees that are "Associates" are only able to view their own reimbursement requests
-* Employees that are "Managers" are able to view reimbursement requests for all employees
-* All employees are able to filter the requests in their view by status (Pending, Approved, Denied)
-* Managers are able to approve or deny reimbursement requests
-
-## Getting Started
-
-## Usage
-
-## Contributers
-
-Zachary Byrski<br>
-Ivo Vladkov
-
 ## Technical Requirements
 
 The back-end system shall use JDBC to connect to an AWS RDS Postgres database and Javalin technology for dynamic Web application development. The front-end view shall use HTML/JavaScript to make an application that can call server-side components RESTfully. Passwords shall be encrypted in Java and securely stored in the database. The middle tier shall follow proper layered architecture, have reasonable test coverage of the service and DAO layers with JUnit and Mockito, and implement Logback for appropriate logging. Proper and reasonable validation in both the front-end and back-end are expected. 
@@ -66,3 +39,8 @@ The project will be due no earlier than the Friday of Week 5.
 * Users can upload a document or image of their receipt when submitting reimbursements which can stored in the database and reviewed by a financial manager.
 * Application shall be hosted remotely on an EC2.
 * Static files (webpages) shall be hosted on an S3 bucket. 
+
+## Contributers
+
+Zachary Byrski<br>
+Ivo Vladkov
